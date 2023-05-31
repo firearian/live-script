@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+.ProseMirror {
+  > * {
+    margin-inline-start: 5.8%;
+    margin-inline-end: 5.8%;
+  }
+  line-height: 1.2em;
+  min-height: 90vh;
+  color: black;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12;
+  padding-block-end: 1em;
+  padding-block-start: 1em;
+}
