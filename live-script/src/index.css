@@ -7,9 +7,9 @@ code {
 }
 .ProseMirror {
   > * {
-    margin-inline-start: 5.8%;
-    margin-inline-end: 5.8%;
   }
+  margin-inline-start: 5.8%;
+  margin-inline-end: 5.8%;
   line-height: 1.2em;
   min-height: 90vh;
   color: black;
