@@ -15,14 +15,7 @@ const CustomParagraph = Paragraph.extend({
     };
   },
   addKeyboardShortcuts() {
-    return {
-      Enter: () => {
-        console.log('Nabby');
-        console.log(this.editor.commands.getScriptType());
-        this.editor.commands.setNewLine(this.editor.commands.getScriptType());
-        return true;
-      },
-    };
+    return {};
   },
 });
 

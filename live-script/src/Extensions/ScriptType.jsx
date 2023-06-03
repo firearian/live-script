@@ -10,18 +10,12 @@ const ScriptType = Extension.create({
   addOptions() {
     return {
       types: ['paragraph'],
-      scriptTypes: ['header', 'action', 'character', 'parenthetical', 'dialogue'],
+      scriptTypes: ['header', 'action', 'character', 'dialogue', 'parenthetical'],
       textAlign: '',
       marginInlineStart: '',
       marginInlineEnd: '',
       textTransform: '',
       fontStyle: '',
-    };
-  },
-
-  addStorage() {
-    return {
-      currentType: 'action',
     };
   },
 
@@ -88,11 +82,21 @@ const ScriptType = Extension.create({
     return {
       Tab: () => {
         console.log('Tabby');
-        if (!this.editor.chain().focus().isEmpty()) {
-          this.editor.commands.enter();
-        }
-        this.editor.commands.setScriptType();
+        this.editor.commands.setScriptSubType(false);
         this.editor.commands.setParentheses();
+        return true;
+      },
+      Enter: () => {
+        console.log('Enterabby');
+        this.editor
+          .chain()
+          .newlineInCode()
+          .createParagraphNear()
+          .liftEmptyBlock()
+          .splitBlock()
+          .focus()
+          .run();
+        this.editor.commands.setScriptSubType(true);
         return true;
       },
     };
@@ -100,42 +104,67 @@ const ScriptType = Extension.create({
 
   addCommands() {
     return {
-      getScriptType: () => () => this.storage.currentType,
-      getConfiguration: (nodeSubType) => () => {
-        let configuration = styleAtributes(nodeSubType);
+      getScriptSubType: (currentSubType, isNewLine) => () => {
+        const scriptTypes = Array.from(this.options.scriptTypes);
+        if (!scriptTypes.includes(currentSubType)) {
+          return false;
+        }
+        if (isNewLine) {
+          switch (currentSubType) {
+            case 'header':
+              return 'action';
+            case 'character':
+              return 'dialogue';
+            case 'parenthetical':
+              return 'dialogue';
+            default:
+              return currentSubType;
+          }
+        }
+        if (scriptTypes.indexOf(currentSubType) === scriptTypes.length - 1) {
+          return scriptTypes[0];
+        }
+        return scriptTypes[scriptTypes.indexOf(currentSubType) + 1];
+      },
+      setAttributes:
+        (attributes) =>
+        ({ commands }) =>
+          this.options.types.every((type) => commands.updateAttributes(type, attributes)),
+      getAttributes: (nodeSubType) => () => {
+        let attributes = styleAtributes(nodeSubType);
         switch (nodeSubType) {
           case 'header':
-            configuration = {
-              ...configuration,
+            attributes = {
+              ...attributes,
               textTransform: 'uppercase',
               marginTop: '2ch',
             };
             break;
           case 'action':
-            configuration = {
-              ...configuration,
+            attributes = {
+              ...attributes,
               marginTop: '1ch',
             };
             break;
           case 'character':
-            configuration = {
-              ...configuration,
+            attributes = {
+              ...attributes,
               textAlign: 'center',
               textTransform: 'uppercase',
               marginTop: '1ch',
             };
             break;
           case 'parenthetical':
-            configuration = {
-              ...configuration,
+            attributes = {
+              ...attributes,
               marginInlineStart: '15.1ch',
               marginInlineEnd: '15.1ch',
               fontStyle: 'italic',
             };
             break;
           case 'dialogue':
-            configuration = {
-              ...configuration,
+            attributes = {
+              ...attributes,
               textAlign: 'justify',
               marginInlineStart: '10.1ch',
               marginInlineEnd: '10.1ch',
@@ -144,97 +173,45 @@ const ScriptType = Extension.create({
           default:
             break;
         }
-        return configuration;
+        return attributes;
       },
-      setNewLine:
-        (currentNodeSubType) =>
-        ({ tr, commands }) => {
-          let newAttributes = '';
-          switch (currentNodeSubType) {
-            case 'header':
-              newAttributes = commands.getConfiguration('action');
-              break;
-            case 'character':
-              newAttributes = commands.getConfiguration('dialogue');
-              break;
-            case 'parenthetical':
-              newAttributes = commands.getConfiguration('dialogue');
-              break;
-            default:
-              break;
-          }
-          const { selection } = tr;
-          let transaction = tr;
-          const currentNode = selection.$head.parent;
-          if (['parenthetical', 'dialogue'].includes(currentNode.attrs.scriptType)) {
-            const re = /^\(.*\)$/;
-            let newText;
-            const text = currentNode.textContent;
-            const start = selection.$to.before() + 1;
-            const end = selection.$to.after() - 1;
-
-            if (this.storage.currentType === 'parenthetical') {
-              newText = `(${text})`;
-            } else if (text.match(re)) {
-              newText = text.replaceAll(/^\(*|\)*$/g, '');
-            } else {
-              return;
-            }
-            transaction = transaction.insertText(newText, start, end);
-            if (!text) {
-              const newResolvedPos = transaction.doc.resolve(end + 1);
-              const newSelection = new TextSelection(newResolvedPos);
-              transaction = transaction.setSelection(newSelection);
-            }
-          }
-        },
       setParentheses:
         () =>
         ({ tr }) => {
           const { selection } = tr;
           let transaction = tr;
           const currentNode = selection.$head.parent;
-          if (['parenthetical', 'dialogue'].includes(currentNode.attrs.scriptType)) {
-            const re = /^\(.*\)$/;
-            let newText;
-            const text = currentNode.textContent;
-            const start = selection.$to.before() + 1;
-            const end = selection.$to.after() - 1;
-
-            if (this.storage.currentType === 'parenthetical') {
-              newText = `(${text})`;
-            } else if (text.match(re)) {
-              newText = text.replaceAll(/^\(*|\)*$/g, '');
-            } else {
-              return;
-            }
-            transaction = transaction.insertText(newText, start, end);
-            if (!text) {
-              const newResolvedPos = transaction.doc.resolve(end + 1);
-              const newSelection = new TextSelection(newResolvedPos);
-              transaction = transaction.setSelection(newSelection);
-            }
+          const currentScriptSubType = currentNode.attrs.scriptType;
+          const re = /^\(.*\)$/;
+          const text = currentNode.textContent;
+          let newText;
+          if (currentScriptSubType === 'parenthetical') {
+            newText = `(${text})`;
+          } else if (currentScriptSubType === 'header' && text.match(re)) {
+            newText = text.replaceAll(/^\(*|\)*$/g, '');
+          } else {
+            return;
+          }
+          const start = selection.$to.before() + 1;
+          const end = selection.$to.after() - 1;
+          transaction = transaction.insertText(newText, start, end);
+          if (!text) {
+            const newResolvedPos = transaction.doc.resolve(end + 1);
+            const newSelection = new TextSelection(newResolvedPos);
+            transaction = transaction.setSelection(newSelection);
           }
         },
-      setScriptType:
-        () =>
+      setScriptSubType:
+        (isNewLine) =>
         ({ commands, tr }) => {
           const { selection } = tr;
-          const currentScriptType = selection.$head.parent.attrs.scriptType;
-          const scriptTypes = Array.from(this.options.scriptTypes);
-          let newType;
-          if (scriptTypes.indexOf(currentScriptType) === scriptTypes.length - 1) {
-            newType = scriptTypes[0];
-          } else {
-            newType = scriptTypes[scriptTypes.indexOf(currentScriptType) + 1];
+          const currentSubScriptType = selection.$head.parent.attrs.scriptType;
+          const newScriptSubType = commands.getScriptSubType(currentSubScriptType, isNewLine);
+          if (currentSubScriptType === newScriptSubType) {
+            return;
           }
-          if (!scriptTypes.includes(currentScriptType)) {
-            return false;
-          }
-          const configuration = commands.getConfiguration(newType);
-
-          this.storage.currentType = newType;
-          return this.options.types.every((type) => commands.updateAttributes(type, configuration));
+          const attributes = commands.getAttributes(newScriptSubType);
+          commands.setAttributes(attributes);
         },
     };
   },
