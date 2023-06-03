@@ -7,20 +7,19 @@ import ScriptType from '../Extensions/ScriptType';
 const CustomParagraph = Paragraph.extend({
   addCommands() {
     return {
-      changeScriptType:
+      isEmpty:
         () =>
-        ({ commands }) => {
-          const currentType = commands.getScriptType();
-          commands.setScriptType(currentType);
-        },
+        ({ tr }) =>
+          !tr.doc.textContent,
+      changeScriptType: () => (_ref) => {},
     };
   },
   addKeyboardShortcuts() {
     return {
-      Tab: () => {
-        console.log('Tabby');
-        console.log(this.editor);
-        this.editor.commands.changeScriptType();
+      Enter: () => {
+        console.log('Nabby');
+        console.log(this.editor.commands.getScriptType());
+        this.editor.commands.setNewLine(this.editor.commands.getScriptType());
         return true;
       },
     };
