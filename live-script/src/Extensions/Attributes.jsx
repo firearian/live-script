@@ -1,4 +1,4 @@
-const styleAttributes = (type) => ({
+export const styleAttributes = (type) => ({
   scriptType: type,
   textAlign: 'left',
   marginInlineStart: '0ch',
@@ -7,4 +7,28 @@ const styleAttributes = (type) => ({
   fontStyle: 'normal',
   marginTop: '0ch',
 });
-export default styleAttributes;
+
+export const SCRIPT_ATTRIBUTE_TYPES = {
+  header: {
+    textTransform: 'uppercase',
+    marginTop: '2ch',
+  },
+  action: {
+    marginTop: '1ch',
+  },
+  character: {
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    marginTop: '1ch',
+  },
+  dialogue: {
+    textAlign: 'justify',
+    marginInlineStart: '10.1ch',
+    marginInlineEnd: '10.1ch',
+  },
+  parenthetical: {
+    marginInlineStart: '15.1ch',
+    marginInlineEnd: '15.1ch',
+    fontStyle: 'italic',
+  },
+};

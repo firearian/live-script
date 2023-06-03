@@ -1,16 +1,33 @@
+// This file defines a TipTap extension named ScriptType.
+// It adds styles to the paragraph node to reflect each Script Type (action, dialogue, etc.).
+// And it handles the logic to change between styles.
 import { Extension } from '@tiptap/core';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { TextSelection } from 'prosemirror-state';
-import styleAtributes from './Attributes';
+import { styleAttributes, SCRIPT_ATTRIBUTE_TYPES } from './Attributes';
 
-// eslint-disable-next-line import/prefer-default-export
+const SCRIPT_TYPES = {
+  HEADER: 'header',
+  ACTION: 'action',
+  CHARACTER: 'character',
+  DIALOGUE: 'dialogue',
+  PARENTHETICAL: 'parenthetical',
+};
+
 const ScriptType = Extension.create({
   name: 'scriptType',
 
+  // List of options (HTML attributes) for extension.
+  // Add Node types into "types" to apply extension to more node types.
   addOptions() {
     return {
       types: ['paragraph'],
-      scriptTypes: ['header', 'action', 'character', 'dialogue', 'parenthetical'],
+      scriptTypes: [
+        SCRIPT_TYPES.HEADER,
+        SCRIPT_TYPES.ACTION,
+        SCRIPT_TYPES.CHARACTER,
+        SCRIPT_TYPES.DIALOGUE,
+        SCRIPT_TYPES.PARENTHETICAL,
+      ],
       textAlign: '',
       marginInlineStart: '',
       marginInlineEnd: '',
@@ -19,13 +36,14 @@ const ScriptType = Extension.create({
     };
   },
 
+  // functions for setting each of the options as HTML attributes. Default values included.
   addGlobalAttributes() {
     return [
       {
         types: this.options.types,
         attributes: {
           scriptType: {
-            default: 'action',
+            default: SCRIPT_TYPES.ACTION,
             parseHTML: (element) => element.scriptType,
             renderHTML: (attributes) => ({
               class: attributes.scriptType,
@@ -78,16 +96,16 @@ const ScriptType = Extension.create({
     ];
   },
 
+  // The Tab key is used to shuffle between the types of scripts
+  // When in new line, defaults to an appropriate script type based on previous script type
   addKeyboardShortcuts() {
     return {
       Tab: () => {
-        console.log('Tabby');
-        this.editor.commands.setScriptSubType(false);
+        this.editor.commands.setScriptType(false);
         this.editor.commands.setParentheses();
         return true;
       },
       Enter: () => {
-        console.log('Enterabby');
         this.editor
           .chain()
           .newlineInCode()
@@ -96,84 +114,51 @@ const ScriptType = Extension.create({
           .splitBlock()
           .focus()
           .run();
-        this.editor.commands.setScriptSubType(true);
+        this.editor.commands.setScriptType(true);
         return true;
       },
     };
   },
 
+  // Commands as follows:
+  // getScriptType: get the next script type (if shuffling) or appropriate script type (if on new line)
+  // setAttributes: sets input attributes to current node
+  // getAttributes: gets relevant attributes based on input script type
+  // setParentheses: This method adds or removes end/beginning parentheses depending on the script type.
+  // setScriptType: parent function to call to apply a script type
   addCommands() {
     return {
-      getScriptSubType: (currentSubType, isNewLine) => () => {
-        const scriptTypes = Array.from(this.options.scriptTypes);
-        if (!scriptTypes.includes(currentSubType)) {
+      getScriptType: (currentScriptType, isNewLine) => () => {
+        const { scriptTypes } = this.options;
+
+        // gets current script type index in the master list of script types.
+        const currentIndex = scriptTypes.indexOf(currentScriptType);
+        if (!scriptTypes.includes(currentScriptType)) {
           return false;
         }
         if (isNewLine) {
-          switch (currentSubType) {
-            case 'header':
-              return 'action';
-            case 'character':
-              return 'dialogue';
-            case 'parenthetical':
-              return 'dialogue';
+          switch (currentScriptType) {
+            case SCRIPT_TYPES.HEADER:
+              return SCRIPT_TYPES.ACTION;
+            case SCRIPT_TYPES.CHARACTER:
+              return SCRIPT_TYPES.DIALOGUE;
+            case SCRIPT_TYPES.PARENTHETICAL:
+              return SCRIPT_TYPES.DIALOGUE;
             default:
-              return currentSubType;
+              return currentScriptType;
           }
         }
-        if (scriptTypes.indexOf(currentSubType) === scriptTypes.length - 1) {
-          return scriptTypes[0];
-        }
-        return scriptTypes[scriptTypes.indexOf(currentSubType) + 1];
+        const nextIndex = (currentIndex + 1) % scriptTypes.length;
+        return scriptTypes[nextIndex];
       },
       setAttributes:
         (attributes) =>
         ({ commands }) =>
           this.options.types.every((type) => commands.updateAttributes(type, attributes)),
-      getAttributes: (nodeSubType) => () => {
-        let attributes = styleAtributes(nodeSubType);
-        switch (nodeSubType) {
-          case 'header':
-            attributes = {
-              ...attributes,
-              textTransform: 'uppercase',
-              marginTop: '2ch',
-            };
-            break;
-          case 'action':
-            attributes = {
-              ...attributes,
-              marginTop: '1ch',
-            };
-            break;
-          case 'character':
-            attributes = {
-              ...attributes,
-              textAlign: 'center',
-              textTransform: 'uppercase',
-              marginTop: '1ch',
-            };
-            break;
-          case 'parenthetical':
-            attributes = {
-              ...attributes,
-              marginInlineStart: '15.1ch',
-              marginInlineEnd: '15.1ch',
-              fontStyle: 'italic',
-            };
-            break;
-          case 'dialogue':
-            attributes = {
-              ...attributes,
-              textAlign: 'justify',
-              marginInlineStart: '10.1ch',
-              marginInlineEnd: '10.1ch',
-            };
-            break;
-          default:
-            break;
-        }
-        return attributes;
+      getAttributes: (nodeScriptType) => () => {
+        let attributes = {};
+        attributes = SCRIPT_ATTRIBUTE_TYPES[nodeScriptType];
+        return { ...styleAttributes(nodeScriptType), ...attributes };
       },
       setParentheses:
         () =>
@@ -181,13 +166,13 @@ const ScriptType = Extension.create({
           const { selection } = tr;
           let transaction = tr;
           const currentNode = selection.$head.parent;
-          const currentScriptSubType = currentNode.attrs.scriptType;
+          const currentScriptType = currentNode.attrs.scriptType;
           const re = /^\(.*\)$/;
           const text = currentNode.textContent;
           let newText;
-          if (currentScriptSubType === 'parenthetical') {
+          if (currentScriptType === SCRIPT_TYPES.PARENTHETICAL) {
             newText = `(${text})`;
-          } else if (currentScriptSubType === 'header' && text.match(re)) {
+          } else if (currentScriptType === SCRIPT_TYPES.HEADER && text.match(re)) {
             newText = text.replaceAll(/^\(*|\)*$/g, '');
           } else {
             return;
@@ -201,16 +186,18 @@ const ScriptType = Extension.create({
             transaction = transaction.setSelection(newSelection);
           }
         },
-      setScriptSubType:
+      setScriptType:
         (isNewLine) =>
         ({ commands, tr }) => {
           const { selection } = tr;
-          const currentSubScriptType = selection.$head.parent.attrs.scriptType;
-          const newScriptSubType = commands.getScriptSubType(currentSubScriptType, isNewLine);
-          if (currentSubScriptType === newScriptSubType) {
+          const currentScriptType = selection.$head.parent.attrs.scriptType;
+
+          // obtains a new script type based on whether a newline (enter pressed) or same line.
+          const newScriptType = commands.getScriptType(currentScriptType, isNewLine);
+          if (currentScriptType === newScriptType) {
             return;
           }
-          const attributes = commands.getAttributes(newScriptSubType);
+          const attributes = commands.getAttributes(newScriptType);
           commands.setAttributes(attributes);
         },
     };
