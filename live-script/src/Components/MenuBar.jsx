@@ -1,7 +1,4 @@
-/* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable react/prop-types */
-import { Editor } from '@tiptap/react';
+import { Editor, isActive } from '@tiptap/react';
 import PropTypes from 'prop-types';
 import './MenuBar.css';
 
@@ -9,7 +6,7 @@ import React, { Fragment } from 'react';
 
 import MenuItem from './MenuItem';
 
-export default function MenuBar({ editor }) {
+const MenuBar = function ({ editor }) {
   const items = [
     {
       icon: 'bold',
@@ -130,11 +127,33 @@ export default function MenuBar({ editor }) {
 
   return (
     <div className='editor__footer'>
-      {items.map((item, index) => (
-        <Fragment key={index}>
-          {item.type === 'divider' ? <div className='divider' /> : <MenuItem {...item} />}
-        </Fragment>
-      ))}
+      {items.map((item, index) => {
+        const { icon, title, action, isActiveFunction } = item;
+        const key = item.icon ? item.icon : item.type + index;
+        return (
+          <Fragment key={key}>
+            {item.type === 'divider' ? (
+              <div className='divider' />
+            ) : (
+              <MenuItem
+                icon
+                title={title.toString()}
+                onClick={action}
+                isActive={isActiveFunction}
+              />
+            )}
+          </Fragment>
+        );
+      })}
     </div>
   );
-}
+};
+
+MenuBar.propTypes = {
+  editor: PropTypes.instanceOf(Editor),
+};
+
+MenuBar.defaultProps = {
+  editor: () => {},
+};
+export default MenuBar;

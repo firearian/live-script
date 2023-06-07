@@ -1,11 +1,12 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import logo from './logo.svg';
 
-function Login() {
+function Login(props) {
+  const { setIsAuthenticated } = props;
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -15,7 +16,6 @@ function Login() {
     e.preventDefault();
     setError('');
     const uri = `${process.env.REACT_APP_HOSTNAME}/api/login`;
-    console.log(uri);
 
     try {
       const response = await axios
@@ -29,13 +29,12 @@ function Login() {
 
           // Check if login was successful (token received)
           if (res.status === 200) {
-            console.log('success!!');
             localStorage.setItem('lstoken', JSON.stringify(res.data.accessToken));
-            console.log(history('/', { replace: true }));
+            setIsAuthenticated(true);
             history('/editor', { replace: true });
           } else {
             // Handle unsuccessful login (e.g., display error message)
-            console.log('Login failed');
+            setIsAuthenticated(false);
             throw new Error(`Error ${res.status}. Login failed. ${res.message}`);
           }
         });
@@ -59,36 +58,36 @@ function Login() {
         <form className='mt-8 space-y-6' onSubmit={handleSubmit}>
           <div className='rounded-md shadow-sm -space-y-px'>
             <div>
-              <label htmlFor='email-address' className='sr-only'>
+              <label htmlFor='email-address'>
                 Email address
+                <input
+                  id='email-address'
+                  name='email'
+                  type='email'
+                  autoComplete='email'
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm'
+                  placeholder='Email address'
+                />
               </label>
-              <input
-                id='email-address'
-                name='email'
-                type='email'
-                autoComplete='email'
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm'
-                placeholder='Email address'
-              />
             </div>
             <div>
-              <label htmlFor='password' className='sr-only'>
+              <label htmlFor='password'>
                 Password
+                <input
+                  id='password'
+                  name='password'
+                  type='password'
+                  autoComplete='current-password'
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm'
+                  placeholder='Password'
+                />
               </label>
-              <input
-                id='password'
-                name='password'
-                type='password'
-                autoComplete='current-password'
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm'
-                placeholder='Password'
-              />
             </div>
           </div>
 
@@ -105,5 +104,12 @@ function Login() {
     </div>
   );
 }
+Login.propTypes = {
+  setIsAuthenticated: PropTypes.func,
+};
+
+Login.defaultProps = {
+  setIsAuthenticated: () => {},
+};
 
 export default Login;

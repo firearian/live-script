@@ -4,9 +4,8 @@ import { Collaboration } from '@tiptap/extension-collaboration';
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 import { HocuspocusProvider } from '@hocuspocus/provider';
 import * as Y from 'yjs';
-import React, { useCallback, useEffect, useState, componentWillUnmount } from 'react';
+import { useEffect, useState } from 'react';
 import MenuBar from '../Components/MenuBar';
-import HeaderBar from '../Components/HeaderBar';
 import ScriptType from '../Extensions/ScriptType';
 
 const yDoc = new Y.Doc();
@@ -55,13 +54,10 @@ function Tiptap() {
   }, []);
 
   // do I need this if I don't change users?
-  useEffect(() => {
-    console.log('errr: ', yDoc);
-  }, [yDoc, EditorContent]);
+  useEffect(() => {}, [yDoc, EditorContent]);
 
   // do I need this if I don't change users?
   useEffect(() => {
-    console.log('User: ', currentUser);
     if (editor && currentUser) {
       editor.chain().focus().updateUser(currentUser).run();
     }
@@ -76,7 +72,6 @@ function Tiptap() {
 
   return (
     <div className='editor'>
-      <div className='editor__header' />
       <EditorContent className='editor bg-white h-9999' editor={editor} />
       {editor && <MenuBar editor={editor} />}
     </div>

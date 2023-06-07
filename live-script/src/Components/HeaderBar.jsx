@@ -1,6 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable react/prop-types */
 import { Editor } from '@tiptap/react';
 import PropTypes from 'prop-types';
 import './MenuBar';
@@ -9,7 +6,7 @@ import React, { Fragment } from 'react';
 
 import MenuItem from './MenuItem';
 
-export default function HeaderBar({ editor }) {
+const HeaderBar = function ({ editor }) {
   const items = [
     {
       icon: 'bold',
@@ -137,4 +134,13 @@ export default function HeaderBar({ editor }) {
       ))}
     </div>
   );
-}
+};
+
+HeaderBar.propTypes = {
+  editor: PropTypes.instanceOf(Editor),
+};
+
+HeaderBar.defaultProps = {
+  editor: () => {},
+};
+export default HeaderBar;
