@@ -32,7 +32,6 @@ const ScriptType = Extension.create({
       marginInlineStart: '',
       marginInlineEnd: '',
       textTransform: '',
-      fontStyle: '',
     };
   },
 
@@ -75,13 +74,6 @@ const ScriptType = Extension.create({
             parseHTML: (element) => element.style.textAlign,
             renderHTML: (attributes) => ({
               style: `text-align: ${attributes.textAlign}`,
-            }),
-          },
-          fontStyle: {
-            default: 'normal',
-            parseHTML: (element) => element.style.fontStyle,
-            renderHTML: (attributes) => ({
-              style: `font-style: ${attributes.fontStyle}`,
             }),
           },
           marginTop: {

@@ -1,16 +1,18 @@
 import './App.css';
-import EditorContainer from './Pages/EditorContainer';
-import Editor from './Pages/Editor';
+import './index.css';
+import Routers from './routes';
 
 function App() {
   return (
-    <div className='App'>
-      <header className='App-header'>
-        <EditorContainer>
-          <Editor />
-        </EditorContainer>
-      </header>
-    </div>
+    <Routers />
+    // <div className='App'>
+    //   <header className='App-header'>
+    //     <div className='editor__header' />
+    //     <EditorContainer>
+    //       <Editor />
+    //     </EditorContainer>
+    //   </header>
+    // </div>
   );
 }
 

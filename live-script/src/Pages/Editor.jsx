@@ -3,15 +3,19 @@ import StarterKit from '@tiptap/starter-kit';
 import { Collaboration } from '@tiptap/extension-collaboration';
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 import { HocuspocusProvider } from '@hocuspocus/provider';
-import React, { useCallback, useEffect, useState } from 'react';
 import * as Y from 'yjs';
+import React, { useCallback, useEffect, useState, componentWillUnmount } from 'react';
+import MenuBar from '../Components/MenuBar';
+import HeaderBar from '../Components/HeaderBar';
 import ScriptType from '../Extensions/ScriptType';
 
 const yDoc = new Y.Doc();
 const websocketProvider = new HocuspocusProvider({
-  url: 'ws://0.0.0.0:80',
+  url: 'ws://0.0.0.0:3001/api/collaboration/:document',
+  // url: 'ws://159.122.186.74:32592',
   name: 'room',
   document: yDoc,
+  token: localStorage.getItem('lstoken'),
 });
 const colors = ['#958DF1', '#F98181', '#FBBC88', '#FAF594', '#70CFF8', '#94FADB', '#B9F18D'];
 const getRandomElement = (list) => list[Math.floor(Math.random() * list.length)];
@@ -40,7 +44,7 @@ function Tiptap() {
         provider: websocketProvider,
       }),
     ],
-    content: '<p style="margin-top: 1ch">Hello World!</p>',
+    content: '',
   });
 
   useEffect(() => {
@@ -59,12 +63,24 @@ function Tiptap() {
   useEffect(() => {
     console.log('User: ', currentUser);
     if (editor && currentUser) {
-      // localStorage.setItem('currentUser', JSON.stringify(currentUser));
       editor.chain().focus().updateUser(currentUser).run();
     }
   }, [editor, currentUser]);
 
-  return <EditorContent className='editor bg-white h-9999' editor={editor} />;
+  useEffect(
+    () => () => {
+      websocketProvider.on('close');
+    },
+    [],
+  );
+
+  return (
+    <div className='editor'>
+      <div className='editor__header' />
+      <EditorContent className='editor bg-white h-9999' editor={editor} />
+      {editor && <MenuBar editor={editor} />}
+    </div>
+  );
 }
 
 export default Tiptap;

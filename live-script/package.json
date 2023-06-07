@@ -1,6 +1,7 @@
 {
   "name": "live-script",
   "version": "0.1.0",
+  "homepage": "https://firearian.github.io/live-script",
   "private": true,
   "dependencies": {
     "@hocuspocus/provider": "^2.0.6",
@@ -16,11 +17,13 @@
     "@tiptap/pm": "^2.0.3",
     "@tiptap/react": "^2.0.3",
     "@tiptap/starter-kit": "^2.0.3",
+    "axios": "^1.4.0",
     "prop-types": "^15.8.1",
     "prosemirror-model": "^1.19.2",
     "prosemirror-state": "^1.4.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.12.0",
     "react-scripts": "5.0.1",
     "tailwindcss": "^3.3.2",
     "tw-elements": "^1.0.0-beta2",
@@ -32,6 +35,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src/**/*.{js,jsx}",
@@ -64,6 +69,7 @@
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "gh-pages": "^5.0.0",
     "prettier": "^2.8.8"
   }
 }
