@@ -121,7 +121,7 @@ const MenuBar = function ({ editor }) {
     {
       icon: 'arrow-go-forward-line',
       title: 'Redo',
-      action: () => editor.chain().focus().redo().run(),
+      action: () => editor.chain().enter().focus().run(), // editor.chain().focus().redo().run(),
     },
   ];
 
@@ -136,7 +136,7 @@ const MenuBar = function ({ editor }) {
               <div className='divider' />
             ) : (
               <MenuItem
-                icon
+                icon={icon}
                 title={title.toString()}
                 onClick={action}
                 isActive={isActiveFunction}

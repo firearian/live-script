@@ -16,17 +16,17 @@ export const SCRIPT_ATTRIBUTE_TYPES = {
     marginTop: '1em',
   },
   character: {
-    marginInlineStart: '15.5rem',
-    marginInlineEnd: '4rem',
+    marginInlineStart: '17.5vw',
+    marginInlineEnd: '5vw',
     textTransform: 'uppercase',
     marginTop: '1em',
   },
   dialogue: {
-    marginInlineStart: '8rem',
-    marginInlineEnd: '13rem',
+    marginInlineStart: '9vw',
+    marginInlineEnd: '14vw',
   },
   parenthetical: {
-    marginInlineStart: '11.5rem',
-    marginInlineEnd: '18.1rem',
+    marginInlineStart: '12.5vw',
+    marginInlineEnd: '19.1vw',
   },
 };

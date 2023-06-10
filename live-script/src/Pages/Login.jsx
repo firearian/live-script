@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import logo from './logo.svg';
+import LogoutContext from '../Contexts/ContextProviders';
 
 function Login(props) {
-  const { setIsAuthenticated } = props;
+  const { setIsAuthenticated, setCurrentUser } = props;
+  const { setHasLoggedOut } = useContext(LogoutContext);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [authFailed, setAuthFailed] = useState(false);
   const history = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -30,15 +33,19 @@ function Login(props) {
           // Check if login was successful (token received)
           if (res.status === 200) {
             localStorage.setItem('lstoken', JSON.stringify(res.data.accessToken));
+            console.log('Set iaAuthenticated to true. Received state 200');
+            console.log('set Currentuser to: ', JSON.stringify(res.data));
             setIsAuthenticated(true);
+            setCurrentUser(JSON.stringify(res.data.user));
+            setHasLoggedOut(true);
             history('/editor', { replace: true });
-          } else {
-            // Handle unsuccessful login (e.g., display error message)
-            setIsAuthenticated(false);
-            throw new Error(`Error ${res.status}. Login failed. ${res.message}`);
           }
         });
     } catch (err) {
+      console.log('invalid');
+      // Handle unsuccessful login (e.g., display error message)
+      setIsAuthenticated(false);
+      setAuthFailed(true);
       // Handle login error
       if (error.response && error.response.status === 401) {
         setError('Invalid email or password');
@@ -90,7 +97,9 @@ function Login(props) {
               </label>
             </div>
           </div>
-
+          {authFailed && (
+            <span className='mt-2 text-red-600 text-sm'>Invalid Username of Password</span>
+          )}
           <div>
             <button
               type='submit'
@@ -106,10 +115,12 @@ function Login(props) {
 }
 Login.propTypes = {
   setIsAuthenticated: PropTypes.func,
+  setCurrentUser: PropTypes.func,
 };
 
 Login.defaultProps = {
   setIsAuthenticated: () => {},
+  setCurrentUser: () => {},
 };
 
 export default Login;

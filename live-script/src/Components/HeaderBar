@@ -127,11 +127,15 @@ const HeaderBar = function ({ editor }) {
 
   return (
     <div className='editor__header'>
-      {items.map((item, index) => (
-        <Fragment key={index}>
-          {item.type === 'divider' ? <div className='divider' /> : <MenuItem {...item} />}
-        </Fragment>
-      ))}
+      {items.map((item, index) => {
+        console.log(item);
+        console.log(index);
+        return (
+          <Fragment key={index}>
+            {item.type === 'divider' ? <div className='divider' /> : <MenuItem {...item} />}
+          </Fragment>
+        );
+      })}
     </div>
   );
 };
