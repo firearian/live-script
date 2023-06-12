@@ -107,25 +107,25 @@ code {
 }
 .container {
   padding-top: 9vh;
-  width: 71vw;
+  width: 845px;
   box-shadow: 0 0 5px rgba(59, 65, 94, 0.2);
 }
 
 @media (min-width: 320px) {
   .container {
-    max-width: 320px;
+    max-width: 520px;
   }
 }
 
 @media (min-width: 640px) {
   .container {
-    max-width: 640px;
+    max-width: 630px;
   }
 }
 
 @media (min-width: 768px) {
   .container {
-    max-width: 70vw;
+    max-width: 720px;
   }
 }
 
