@@ -21,7 +21,7 @@ function App() {
     if (token && currentRoom && user) {
       setIsAuthenticated(true);
     }
-  }, [user, currentRoom, token]);
+  }, [user, currentRoom, token, setIsAuthenticated]);
 
   const handleRoomClick = (newRoom) => {
     if (newRoom !== currentRoom) {
