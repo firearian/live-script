@@ -1,100 +1,99 @@
 /* eslint-disable object-shorthand */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { HocuspocusProvider } from '@hocuspocus/provider';
-import { PropTypes } from 'prop-types';
 import * as Y from 'yjs';
+import { useCurrentContext } from './Contexts/CurrentContext';
+import { useWebSocketContext } from './Contexts/WebSocketContext';
+import { useLocalStorageContext } from './Contexts/LocalStorageContext';
+import websocketProvider from './Contexts/WebSocketProvider';
 import EditorContainer from './Pages/EditorContainer';
 import Editor from './Pages/Editor';
 import LoginPage from './Pages/Login';
-import Spinner from './Components/Spinner';
 import ErrorPage from './error404';
-import websocketProvider from './Contexts/WebSocketProvider';
+import Spinner from './Components/Spinner';
 
-const provider = { value: null };
-const yDoc = new Y.Doc();
+function Routers() {
+  const { isAuthenticated, setIsAuthenticated, setCurrentUser, currentRoom, setCurrentRoom } =
+    useCurrentContext();
+  const { provider, setProvider, shouldReconnect, setShouldReconnect } = useWebSocketContext();
+  const { token, user } = useLocalStorageContext();
+  const [wsStatus, setWsStatus] = useState(provider?.status || '');
+  const { status, document } = provider ?? {};
 
-function Routers(props) {
-  const { isAuthenticated, setIsAuthenticated } = props;
-  const [isConnected, setIsConnected] = useState(false);
-  console.log('isconnected1: ', isConnected);
-  const [currentUser, setCurrentUser] = useState({});
-  console.log('yDoc: ', yDoc);
+  const providerConfig = useCallback(() => {
+    const yDoc = new Y.Doc();
+    setProvider(
+      new HocuspocusProvider({
+        websocketProvider: websocketProvider,
+        document: yDoc,
+        token: token,
+        name: currentRoom,
+        onStatus(event) {
+          setWsStatus(event.status);
+        },
+      }),
+    );
+  }, [setProvider, token, currentRoom]);
 
   useEffect(() => {
-    console.log('Router props changed.', props);
-    console.log('isconnected: ', isConnected);
-    if (isAuthenticated) {
-      console.log('tokennnnnn: ', localStorage.getItem('lstoken'));
-      const lstoken = localStorage.getItem('lstoken');
-      if (provider.value?.token !== lstoken) {
-        provider.value = new HocuspocusProvider({
-          websocketProvider: websocketProvider,
-          document: yDoc,
-          token: lstoken,
-          name: 'qoom',
-        });
-      }
-      provider.value.connect();
-      console.log('isconnectedset: ', isConnected);
-      setIsConnected(true);
-    } else {
-      console.log('isconnectedremoval: ', isConnected);
-      setIsConnected(false);
+    if (shouldReconnect === 'configure') {
+      providerConfig();
+      setShouldReconnect('reconnect');
+    } else if (shouldReconnect === 'reconnect') {
+      provider?.connect();
+      setShouldReconnect('');
     }
-  }, [props]);
+  }, [shouldReconnect, providerConfig, provider]);
 
   useEffect(() => {
-    console.log('Router state changed currentUser: ', currentUser);
-  }, [currentUser]);
+    if (isAuthenticated && wsStatus !== 'connected' && wsStatus !== 'connecting') {
+      providerConfig();
+      setWsStatus('disconnected');
+    }
+  }, [isAuthenticated, wsStatus, providerConfig]);
 
-  const router = createBrowserRouter([
+  useEffect(() => {
+    if (isAuthenticated && wsStatus === 'disconnected') {
+      provider?.connect();
+      setShouldReconnect('');
+    }
+  }, [wsStatus, shouldReconnect, isAuthenticated, provider]);
+
+  const editorComponent = () =>
+    wsStatus === 'connected' && (
+      <EditorContainer>
+        <Editor
+          websocketProvider={provider}
+          currentUser={user}
+          isConnected={status === 'connected'}
+          yDoc={document}
+        />
+      </EditorContainer>
+    );
+
+  const appRouter = createBrowserRouter([
     {
       path: '/',
       element: isAuthenticated ? (
-        isConnected && (
-          <EditorContainer>
-            <Editor
-              websocketProvider={provider.value}
-              currentUser={currentUser}
-              isConnected={isConnected}
-              yDoc={provider.value.document}
-            />
-          </EditorContainer>
-        )
+        editorComponent()
       ) : (
-        <LoginPage setCurrentUser={setCurrentUser} setIsAuthenticated={setIsAuthenticated} />
+        <LoginPage
+          setCurrentUser={setCurrentUser}
+          setIsAuthenticated={setIsAuthenticated}
+          setCurrentRoom={setCurrentRoom}
+        />
       ),
       errorElement: <ErrorPage />,
     },
     {
       path: '/editor',
-      element: isAuthenticated ? (
-        isConnected && (
-          <EditorContainer>
-            <Editor
-              websocketProvider={provider.value}
-              currentUser={currentUser}
-              isConnected={isConnected}
-              yDoc={provider.value.document}
-            />
-          </EditorContainer>
-        )
-      ) : (
-        <Navigate to='/' replace />
-      ),
+      element: isAuthenticated ? editorComponent() : <Navigate to='/' replace />,
       errorElement: <ErrorPage />,
     },
   ]);
-  return <RouterProvider router={router} fallbackElement={<Spinner />} />;
+
+  return <RouterProvider router={appRouter} fallbackElement={<Spinner />} />;
 }
-Routers.propTypes = {
-  isAuthenticated: PropTypes.bool,
-  setIsAuthenticated: PropTypes.func,
-};
-Routers.defaultProps = {
-  isAuthenticated: false,
-  setIsAuthenticated: () => {},
-};
 
 export default Routers;
