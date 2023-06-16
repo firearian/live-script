@@ -10,11 +10,10 @@ import './App.css';
 import './index.css';
 
 function App() {
-  const { setIsAuthenticated, currentRoom, setCurrentRoom, removeCurrentContext, selectedRoom } =
-    useCurrentContext();
-  const { resetProvider, changeRoom } = useWebSocketContext();
+  const { setIsAuthenticated, currentRoom, setCurrentRoom, selectedRoom } = useCurrentContext();
+  const { changeRoom } = useWebSocketContext();
   const [isOpen, setIsOpen] = useState(false);
-  const { token, removeToken, user, removeUser } = useLocalStorageContext();
+  const { token, user } = useLocalStorageContext();
 
   const handleLogout = useLogout();
 
@@ -24,16 +23,13 @@ function App() {
     }
   }, [user, currentRoom, token]);
 
-  const handleRoomClick = useCallback(
-    (newRoom) => {
-      if (newRoom !== currentRoom) {
-        setCurrentRoom(newRoom);
-        changeRoom(newRoom);
-      }
-      setIsOpen(false);
-    },
-    [currentRoom, setCurrentRoom, changeRoom, setIsOpen],
-  );
+  const handleRoomClick = (newRoom) => {
+    if (newRoom !== currentRoom) {
+      setCurrentRoom(newRoom);
+      changeRoom(newRoom);
+    }
+    setIsOpen(false);
+  };
 
   const toggleMenu = useCallback(() => {
     setIsOpen(!isOpen);
