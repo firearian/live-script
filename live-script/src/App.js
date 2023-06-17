@@ -15,7 +15,7 @@ function App() {
   const [isOpen, setIsOpen] = useState(false);
   const { token, user } = useLocalStorageContext();
 
-  const handleLogout = useLogout();
+  const { handleLogout } = useLogout();
 
   useEffect(() => {
     if (token && currentRoom && user) {
