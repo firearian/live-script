@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCurrentContext } from '../Contexts/CurrentContext';
 import { useLocalStorageContext } from '../Contexts/LocalStorageContext';
 import { ROUTES, HTTP_STATUS_CODES, ERROR_MESSAGES } from '../Constants';
+import useLogout from '../useLogout';
 import loginUser from '../API';
 import InputField from '../Components/InputField';
 import logo from './logo.svg';
@@ -11,13 +12,21 @@ import '../index.css';
 function Login() {
   const { setIsAuthenticated, setCurrentRoom } = useCurrentContext();
   const { setToken, setUser } = useLocalStorageContext();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorData, setErrorData] = useState({
     error: '',
     errorCode: '',
   });
+
+  useEffect(() => {
+    setPassword('');
+    setEmail('');
+    setErrorData({
+      error: '',
+      errorCode: '',
+    });
+  }, []);
 
   const history = useNavigate();
 
@@ -77,6 +86,7 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder='Email address'
             />
+            <div className='pt-2' />
             <InputField
               id='password'
               type='password'
