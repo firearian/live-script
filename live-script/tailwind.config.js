@@ -8,10 +8,17 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+        courier: ['source-code-pro', 'Menlo', 'Monaco', 'Consolas', 'Courier New', ' monospace'],
       },
       height: {
         // prettier-ignore
         '1': '90vh',
+        // prettier-ignore
+        '2': '1.9rem',
+      },
+      width: {
+        // prettier-ignore
+        '1': '300px',
       },
     },
   },
