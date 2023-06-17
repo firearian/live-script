@@ -1,126 +1,101 @@
-import { useState, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import axios from 'axios';
+import { useCurrentContext } from '../Contexts/CurrentContext';
+import { useLocalStorageContext } from '../Contexts/LocalStorageContext';
+import { ROUTES, HTTP_STATUS_CODES, ERROR_MESSAGES } from '../Constants';
+import loginUser from '../API';
+import InputField from '../Components/InputField';
 import logo from './logo.svg';
-import LogoutContext from '../Contexts/ContextProviders';
+import '../index.css';
 
-function Login(props) {
-  const { setIsAuthenticated, setCurrentUser } = props;
-  const { setHasLoggedOut } = useContext(LogoutContext);
+function Login() {
+  const { setIsAuthenticated, setCurrentRoom } = useCurrentContext();
+  const { setToken, setUser } = useLocalStorageContext();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [authFailed, setAuthFailed] = useState(false);
+  const [errorData, setErrorData] = useState({
+    error: '',
+    errorCode: '',
+  });
+
   const history = useNavigate();
+
+  const handleChange = (newState) => {
+    console.log('target: ', newState);
+    setErrorData({ ...errorData, ...newState });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    const uri = `${process.env.REACT_APP_HOSTNAME}/api/login`;
-
+    handleChange({ name: 'error', value: '' });
+    handleChange({ name: 'errorCode', value: '' });
     try {
-      const response = await axios
-        .post(uri, {
-          email,
-          password,
-        })
-        .then((res) => {
-          console.log('response: ', res);
-          console.log('response: ', res.status);
-
-          // Check if login was successful (token received)
-          if (res.status === 200) {
-            localStorage.setItem('lstoken', JSON.stringify(res.data.accessToken));
-            console.log('Set iaAuthenticated to true. Received state 200');
-            console.log('set Currentuser to: ', JSON.stringify(res.data));
-            setIsAuthenticated(true);
-            setCurrentUser(JSON.stringify(res.data.user));
-            setHasLoggedOut(true);
-            history('/editor', { replace: true });
-          }
-        });
+      const res = await loginUser(email, password);
+      // Check if login was successful (token received)
+      if (res.status === 200) {
+        setUser(res.data.user);
+        setToken(JSON.stringify(res.data.accessToken)); // .replaceAll(/"/g, ''));
+        setCurrentRoom(res.data.user.documents[0]);
+        history(ROUTES.editor, { replace: true });
+      }
     } catch (err) {
-      console.log('invalid');
       // Handle unsuccessful login (e.g., display error message)
       setIsAuthenticated(false);
-      setAuthFailed(true);
-      // Handle login error
-      if (error.response && error.response.status === 401) {
-        setError('Invalid email or password');
-      } else {
-        setError('An error occurred. Please try again later.');
-      }
+      const errorContent =
+        ERROR_MESSAGES[err.cause.response.status] ||
+        HTTP_STATUS_CODES[err.cause.response.status] ||
+        'An error occurred. Please try again later.';
+      handleChange({
+        error: errorContent,
+        errorCode: err.cause.response.status,
+      });
+      console.log('test');
     }
+    setPassword('');
   };
 
+  useEffect(() => {
+    console.log('error: ', errorData);
+  }, [errorData]);
+
   return (
-    <div className='min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8'>
+    <div className='login-container min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8'>
       <div className='max-w-md w-full space-y-8'>
-        <div>
-          <img className='mx-auto h-16 w-auto' src={logo} alt='Logo' />
-          <h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>Sign in</h2>
+        <div className='mx-auto mt-6'>
+          <img className='m-auto h-16 w-auto' src={logo} alt='Logo' />
+          <h2 className='font-courier text-center text-3xl font-extrabold text-gray-900'>
+            Sign in
+          </h2>
         </div>
         <form className='mt-8 space-y-6' onSubmit={handleSubmit}>
-          <div className='rounded-md shadow-sm -space-y-px'>
-            <div>
-              <label htmlFor='email-address'>
-                Email address
-                <input
-                  id='email-address'
-                  name='email'
-                  type='email'
-                  autoComplete='email'
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm'
-                  placeholder='Email address'
-                />
-              </label>
-            </div>
-            <div>
-              <label htmlFor='password'>
-                Password
-                <input
-                  id='password'
-                  name='password'
-                  type='password'
-                  autoComplete='current-password'
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm'
-                  placeholder='Password'
-                />
-              </label>
-            </div>
+          <div className='rounded-md shadow-sm -space-y-px text-gray-600 font-courier text-xs'>
+            <InputField
+              id='email'
+              type='email-address'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder='Email address'
+            />
+            <InputField
+              id='password'
+              type='password'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder='Password'
+            />
           </div>
-          {authFailed && (
-            <span className='mt-2 text-red-600 text-sm'>Invalid Username of Password</span>
-          )}
-          <div>
-            <button
-              type='submit'
-              className='group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
-            >
-              Sign in
-            </button>
-          </div>
+          {errorData.errorCode && <p className='mt-2 text-red-600 text-sm'>{errorData.error}</p>}
+          <button
+            type='submit'
+            className='text-sm group relative w-full flex justify-center py-2 px-4 border border-transparent text-courier font-medium rounded-md text-white bg-black hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600'
+          >
+            Sign in
+          </button>
         </form>
       </div>
     </div>
   );
 }
-Login.propTypes = {
-  setIsAuthenticated: PropTypes.func,
-  setCurrentUser: PropTypes.func,
-};
-
-Login.defaultProps = {
-  setIsAuthenticated: () => {},
-  setCurrentUser: () => {},
-};
 
 export default Login;
