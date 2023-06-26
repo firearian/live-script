@@ -2,8 +2,9 @@
 import { HocuspocusProviderWebsocket } from '@hocuspocus/provider';
 
 const websocketProvider = new HocuspocusProviderWebsocket({
-  url: 'ws://0.0.0.0:3001/api/collaboration/:document',
-  // url: 'ws://159.122.186.74:32592',
+  // url: 'ws://0.0.0.0:3001/api/collaboration/:document',
+  // url: 'ws://159.122.186.74:32592/api/collaboration/:document',
+  url: process.env.REACT_APP_WS_HOST,
   connect: false,
   onConnect() {
     console.log('WS connected!');
