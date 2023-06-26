@@ -27,7 +27,7 @@
     "tailwindcss": "^3.3.2",
     "tw-elements": "^1.0.0-beta2",
     "web-vitals": "^2.1.4",
-    "y-prosemirror": "1.0.2",
+    "y-prosemirror": "1.0.20",
     "y-websocket": "^1.5.0",
     "yjs": "^13.6.1"
   },
