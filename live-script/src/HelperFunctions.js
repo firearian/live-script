@@ -1,17 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 function useLocalStorage(key, initialValue = null) {
   // Get from local storage then
   // parse stored json or return initialValue
   const [storedValue, setStoredValue] = useState(() => {
-    console.log('Printed enter store value, ', key);
     try {
       const item = window.localStorage.getItem(key);
-      console.log('Printed enter store value within setter: ', item);
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      console.log('error stored value');
-      console.log(error);
       return initialValue;
     }
   });
@@ -24,7 +20,6 @@ function useLocalStorage(key, initialValue = null) {
       const valueToStore = value instanceof Function ? value(storedValue) : value;
       // Save to local storage
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
-      console.log('Value to store: ', valueToStore);
       // Save state
       setStoredValue(valueToStore);
     } catch (error) {

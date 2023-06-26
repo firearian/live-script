@@ -7,7 +7,7 @@ const useLogout = () => {
   const { removeCurrentContext } = useCurrentContext();
   const { resetProvider } = useWebSocketContext();
   const { removeToken, removeUser, resetLocalStorageContext } = useLocalStorageContext();
-  const { resetStates, setResetStates } = useState(false);
+  const [resetStates, setResetStates] = useState(false);
 
   const handleLogout = useCallback(() => {
     removeToken();
