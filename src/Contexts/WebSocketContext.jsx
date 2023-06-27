@@ -17,6 +17,7 @@ export function WebSocketContextProvider({ children }) {
   }, [provider]);
 
   const resetProvider = () => {
+    provider.destroy();
     setProvider(null);
     setWebSocketRoom('');
     setShouldReconnect('');
