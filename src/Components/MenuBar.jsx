@@ -5,6 +5,7 @@ import './MenuBar.css';
 import React, { Fragment } from 'react';
 
 import MenuItem from './MenuItem';
+import ColorPicker from './ColorPicker';
 
 const MenuBar = function ({ editor }) {
   const items = [
@@ -33,7 +34,17 @@ const MenuBar = function ({ editor }) {
       isActive: () => editor.isActive('highlight'),
     },
     {
-      type: 'divider',
+      icon: 'paint-fill',
+      title: 'Color',
+      action: (event) => editor.chain().focus().setColor(event.target.value).run(),
+      value: editor.getAttributes('textStyle').color,
+      isActive: () => editor.isActive('color'),
+    },
+    {
+      icon: 'paint-line',
+      title: 'remove-color',
+      action: (event) => editor.chain().focus().unsetColor().run(),
+      isActive: () => editor.isActive('remove-color'),
     },
     {
       type: 'divider',
@@ -72,15 +83,12 @@ const MenuBar = function ({ editor }) {
   return (
     <div className='editor__footer'>
       {items.map((item, index) => {
-        const { icon, title, action, isActive } = item;
         const key = item.icon ? item.icon : item.type + index;
         return (
           <Fragment key={key}>
-            {item.type === 'divider' ? (
-              <div className='divider' />
-            ) : (
-              <MenuItem icon={icon} title={title.toString()} action={action} isActive={isActive} />
-            )}
+            {item.type === 'divider' && <div className='divider' />}
+            {item.title === 'Color' && <ColorPicker item={item} />}
+            {item.type !== 'divider' && item.title !== 'Color' && <MenuItem item={item} />}
           </Fragment>
         );
       })}

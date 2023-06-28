@@ -1,8 +1,12 @@
+/* eslint-disable react/jsx-no-useless-fragment */
 import PropTypes from 'prop-types';
+import { Fragment, useRef } from 'react';
 import remixiconUrl from './remixicon.symbol.svg';
 import './MenuItem.css';
 
-export default function MenuItem({ icon, title, action, isActive = null }) {
+export default function MenuItem({ item }) {
+  const { icon, title, action, value, isActive = null } = item;
+
   return (
     <button
       type='button'
@@ -18,15 +22,21 @@ export default function MenuItem({ icon, title, action, isActive = null }) {
 }
 
 MenuItem.propTypes = {
-  icon: PropTypes.string,
-  title: PropTypes.string,
-  action: PropTypes.func,
-  isActive: PropTypes.func,
+  item: PropTypes.shape({
+    icon: PropTypes.string,
+    title: PropTypes.string,
+    action: PropTypes.func,
+    value: PropTypes.string,
+    isActive: PropTypes.func,
+  }),
 };
 
 MenuItem.defaultProps = {
-  icon: '',
-  title: '',
-  action: null,
-  isActive: null,
+  item: {
+    icon: '',
+    title: '',
+    action: null,
+    value: '',
+    isActive: null,
+  },
 };

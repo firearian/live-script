@@ -93,7 +93,7 @@ const ScriptType = Extension.create({
   addKeyboardShortcuts() {
     return {
       Tab: () => {
-        this.editor.commands.setScriptType(false);
+        this.editor.commands.setScriptTypeAuto(false);
         this.editor.commands.setParentheses();
         return true;
       },
@@ -106,7 +106,7 @@ const ScriptType = Extension.create({
           .splitBlock()
           .focus()
           .run();
-        this.editor.commands.setScriptType(true);
+        this.editor.commands.setScriptTypeAuto(true);
         return true;
       },
     };
@@ -117,7 +117,8 @@ const ScriptType = Extension.create({
   // setAttributes: sets input attributes to current node
   // getAttributes: gets relevant attributes based on input script type
   // setParentheses: This method adds or removes end/beginning parentheses depending on the script type.
-  // setScriptType: parent function to call to apply a script type
+  // setScriptTypeAuto: parent function to call to apply a script type automatically
+  // setScriptTypeManual: parent function to call to apply a specific script type
   addCommands() {
     return {
       getScriptType: (currentScriptType, isNewLine) => () => {
@@ -178,7 +179,7 @@ const ScriptType = Extension.create({
             transaction = transaction.setSelection(newSelection);
           }
         },
-      setScriptType:
+      setScriptTypeAuto:
         (isNewLine) =>
         ({ commands, tr }) => {
           const { selection } = tr;
@@ -186,6 +187,18 @@ const ScriptType = Extension.create({
 
           // obtains a new script type based on whether a newline (enter pressed) or same line.
           const newScriptType = commands.getScriptType(currentScriptType, isNewLine);
+          if (currentScriptType === newScriptType) {
+            return;
+          }
+          const attributes = commands.getAttributes(newScriptType);
+          commands.setAttributes(attributes);
+        },
+      setScriptTypeManual:
+        (newScriptType) =>
+        ({ commands, tr }) => {
+          const { selection } = tr;
+          const currentScriptType = selection.$head.parent.attrs.scriptType;
+
           if (currentScriptType === newScriptType) {
             return;
           }

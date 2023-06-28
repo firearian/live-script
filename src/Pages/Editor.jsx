@@ -9,14 +9,18 @@ function Tiptap() {
   const { wsStatus, provider } = useWebSocketManager();
   const { document } = provider ?? {};
 
-  const editorInstance = useEditor(wsStatus === ConnectionStatus.CONNECTED, document, provider);
+  const editorInstance = useEditor(
+    wsStatus === ConnectionStatus.CONNECTED,
+    document,
+    provider,
+  )?.value;
 
   return (
     <div className='editor'>
       {wsStatus === ConnectionStatus.CONNECTED && (
         <>
-          <EditorContent className='editor bg-white' editor={editorInstance.value} />
-          <MenuBar editor={editorInstance.value} />
+          <EditorContent className='editor bg-white' editor={editorInstance} />
+          <MenuBar editor={editorInstance} />
         </>
       )}
     </div>
