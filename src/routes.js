@@ -27,7 +27,6 @@ function Routers() {
         />
       </>
     );
-    console.log('Document: ', document);
     return wsStatus === 'connected' ? <EditorContainer>{ed}</EditorContainer> : <Spinner />;
   };
   const appRouter = createBrowserRouter([

@@ -1,11 +1,10 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import PropTypes from 'prop-types';
-import { Fragment, useRef } from 'react';
 import remixiconUrl from './remixicon.symbol.svg';
 import './MenuItem.css';
 
 export default function MenuItem({ item }) {
-  const { icon, title, action, value, isActive = null } = item;
+  const { icon, title, action, value, isActive } = item;
 
   return (
     <button
