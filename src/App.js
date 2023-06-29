@@ -6,6 +6,7 @@ import useLogout from './useLogout';
 import Routers from './routes';
 import LogoutButton from './Components/LogoutButton';
 import MenuContainer from './Components/MenuContainer';
+import remixiconUrl from './Components/remixicon.symbol.svg';
 import './App.css';
 import './index.css';
 
@@ -48,7 +49,13 @@ function App() {
           />
         )}
         <div className='editor__header'>
-          <LogoutButton closeApp={handleLogout} />
+          <div className='header-container'>
+            <svg>
+              <use xlinkHref={`${remixiconUrl}#ri-quill-pen-fill`} />
+            </svg>
+            <h className='room-title'>{currentRoom}</h>
+            <LogoutButton closeApp={handleLogout} />
+          </div>
         </div>
         <Routers />
       </header>

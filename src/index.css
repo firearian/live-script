@@ -93,18 +93,58 @@ code {
   top: 0px;
   align-items: center;
   background: #0d0d0d;
-  border-top: 3px solid #0d0d0d;
   border-bottom-left-radius: 0.25rem;
   border-bottom-right-radius: 0.25rem;
   display: flex;
   flex: 0 0 auto;
   flex-wrap: wrap;
-  padding: 0.25rem;
   justify-content: right;
   height: 9vh;
   width: 100vw;
   box-shadow: 0 2px 5px rgba(59, 65, 94, 0.2);
+  z-index: 1001;
 }
+.editor__header button {
+  position: absolute;
+  /* top: 0; */
+  right: 0;
+  font-family: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0.5rem;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.editor__header button:hover {
+  border-color: white;
+  background-color: rgb(45, 45, 45);
+}
+.editor__header svg {
+  height: 20px;
+  position: absolute;
+  width: 20px;
+  left: 50%;
+  transform: translateX(-250%);
+}
+.room-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: inherit;
+  font-weight: bolder;
+  font-size: larger;
+}
+.header-container {
+  justify-content: space-between;
+  display: flex;
+  width: inherit;
+  align-items: center;
+}
+.MuiMenu-list {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
 .container {
   padding-top: 9vh;
   width: 845px;

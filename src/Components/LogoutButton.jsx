@@ -1,19 +1,54 @@
+/* eslint-disable import/no-extraneous-dependencies */
+import { useState } from 'react';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import { Button } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useCurrentContext } from '../Contexts/CurrentContext';
 
 function LogoutButton(props) {
-  const { isAuthenticated } = useCurrentContext();
   const { closeApp } = props;
+  const { isAuthenticated } = useCurrentContext();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const isMenuOpen = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  if (!isAuthenticated) {
+    return null; // or any other fallback behavior if not authenticated
+  }
 
   return (
     isAuthenticated && (
-      <button
-        type='button'
-        onClick={closeApp}
-        className='group relative w-1/8 flex mr-2 justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
-      >
-        Sign out
-      </button>
+      <>
+        <Button
+          id='demo-customized-button'
+          aria-controls={isMenuOpen ? 'demo-customized-button' : undefined}
+          aria-haspopup='true'
+          aria-expanded={isMenuOpen ? 'true' : undefined}
+          variant='outlined'
+          onClick={handleClick}
+          disableElevation
+        >
+          Menu
+        </Button>
+        <Menu
+          id='demo-customized-menu'
+          open={isMenuOpen}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          sx={{}}
+          MenuListProps={{
+            'aria-labelledby': 'basic-button',
+          }}
+        >
+          <MenuItem onClick={closeApp}>Logout</MenuItem>
+        </Menu>
+      </>
     )
   );
 }
