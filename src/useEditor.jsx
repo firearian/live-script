@@ -8,11 +8,13 @@ import Highlight from '@tiptap/extension-highlight';
 import { Color } from '@tiptap/extension-color';
 import TextStyle from '@tiptap/extension-text-style';
 import { useLocalStorageContext } from './Contexts/LocalStorageContext';
+import { useCurrentContext } from './Contexts/CurrentContext';
 import ScriptType from './Extensions/ScriptType';
 
 const editorInstance = { value: null };
 
 const useEditor = (isConnected, yDoc, websocketProvider) => {
+  const { setIsDocLoaded } = useCurrentContext();
   const { user } = useLocalStorageContext();
   editorInstance.value = useMemo(() => {
     if (isConnected) {
@@ -36,6 +38,13 @@ const useEditor = (isConnected, yDoc, websocketProvider) => {
           }),
           TextStyle,
         ],
+        onUpdate(event) {
+          if (event?.editor?.view?.state?.doc?.textContent) {
+            setIsDocLoaded(true);
+          } else {
+            setIsDocLoaded(false);
+          }
+        },
         content: '',
       });
     }

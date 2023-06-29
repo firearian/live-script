@@ -11,7 +11,8 @@ import './App.css';
 import './index.css';
 
 function App() {
-  const { setIsAuthenticated, currentRoom, setCurrentRoom, selectedRoom } = useCurrentContext();
+  const { isAuthenticated, setIsAuthenticated, currentRoom, setCurrentRoom, selectedRoom } =
+    useCurrentContext();
   const { changeRoom } = useWebSocketContext();
   const [isOpen, setIsOpen] = useState(false);
   const { token, user } = useLocalStorageContext();
@@ -46,16 +47,23 @@ function App() {
             roomArray={user.documents}
             selectedRooms={selectedRoom}
             handleRoomClick={handleRoomClick}
+            isVisible={isAuthenticated}
           />
         )}
         <div className='editor__header'>
-          <div className='header-container'>
-            <svg>
-              <use xlinkHref={`${remixiconUrl}#ri-quill-pen-fill`} />
-            </svg>
-            <h className='room-title'>{currentRoom}</h>
-            <LogoutButton closeApp={handleLogout} />
-          </div>
+          {user && (
+            <div className='header-container'>
+              {isAuthenticated && (
+                <>
+                  <svg>
+                    <use xlinkHref={`${remixiconUrl}#ri-quill-pen-fill`} />
+                  </svg>
+                  <h className='room-title'>{currentRoom}</h>
+                </>
+              )}
+              <LogoutButton closeApp={handleLogout} />
+            </div>
+          )}
         </div>
         <Routers />
       </header>

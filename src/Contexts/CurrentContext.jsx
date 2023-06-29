@@ -8,6 +8,7 @@ export const useCurrentContext = () => useContext(CurrentContext);
 export function CurrentContextProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentRoom, setCurrentRoom] = useState(null);
+  const [isDocLoaded, setIsDocLoaded] = useState(false);
 
   useEffect(() => {
     console.log('Authentication State: ', isAuthenticated);
@@ -34,8 +35,10 @@ export function CurrentContextProvider({ children }) {
       setCurrentRoom,
       removeCurrentContext,
       changeRoom,
+      isDocLoaded,
+      setIsDocLoaded,
     }),
-    [isAuthenticated, currentRoom],
+    [isAuthenticated, currentRoom, isDocLoaded],
   );
 
   return (

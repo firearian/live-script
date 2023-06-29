@@ -10,23 +10,26 @@ import ErrorPage from './error404';
 import Spinner from './Components/Spinner';
 
 function Routers() {
-  const { isAuthenticated } = useCurrentContext();
+  const { isAuthenticated, isDocLoaded } = useCurrentContext();
   const { user } = useLocalStorageContext();
   const { wsStatus, provider } = useWebSocketManager();
   const { status, document } = provider ?? {};
 
-  const editorComponent = () =>
-    wsStatus === 'connected' && (
-      <EditorContainer>
+  const editorComponent = () => {
+    const ed = (
+      <>
+        {isDocLoaded && <Spinner />}
         <Editor
           websocketProvider={provider}
           currentUser={user}
           isConnected={status === 'connected'}
           yDoc={document}
         />
-      </EditorContainer>
+      </>
     );
-
+    console.log('Document: ', document);
+    return wsStatus === 'connected' ? <EditorContainer>{ed}</EditorContainer> : <Spinner />;
+  };
   const appRouter = createBrowserRouter([
     {
       path: '/',

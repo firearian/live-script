@@ -2,16 +2,26 @@ import PropTypes from 'prop-types';
 import MenuButton from './SVG';
 import RoomList from './RoomList';
 
-const MenuContainer = function ({ isOpen, toggleMenu, roomArray, selectedRoom, handleRoomClick }) {
+const MenuContainer = function ({
+  isOpen,
+  toggleMenu,
+  roomArray,
+  selectedRoom,
+  handleRoomClick,
+  isVisible,
+}) {
+  console.log('rooom', roomArray);
   return (
     <div className='contents'>
-      <div className='button-container left-4 top-20 absolute m-2 pa'>
-        <MenuButton
-          buttonClassName='menu-item is-active'
-          buttonOnClick={toggleMenu}
-          iconName='menu-line'
-        />
-      </div>
+      {isVisible && (
+        <div className='button-container left-4 top-20 absolute m-2 pa'>
+          <MenuButton
+            buttonClassName='menu-item is-active'
+            buttonOnClick={toggleMenu}
+            iconName='menu-line'
+          />
+        </div>
+      )}
       <div
         className={`menu-container absolute left-0 bg-white top-16 m-4 shadow rounded-lg h-100 border-1 ${
           isOpen ? 'open z1000 pe-a pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -40,6 +50,7 @@ MenuContainer.propTypes = {
   roomArray: PropTypes.arrayOf(PropTypes.string),
   selectedRoom: PropTypes.string,
   handleRoomClick: PropTypes.func,
+  isVisible: PropTypes.bool,
 };
 
 MenuContainer.defaultProps = {
@@ -48,5 +59,6 @@ MenuContainer.defaultProps = {
   roomArray: PropTypes.arrayOf(PropTypes.string),
   selectedRoom: '',
   handleRoomClick: () => {},
+  isVisible: null,
 };
 export default MenuContainer;

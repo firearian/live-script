@@ -20,6 +20,10 @@ module.exports = {
         // prettier-ignore
         '1': '300px',
       },
+      zIndex: {
+        // prettier-ignore
+        '1': '1001',
+      },
     },
   },
   plugins: [elements],

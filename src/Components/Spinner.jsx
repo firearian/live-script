@@ -1,10 +1,10 @@
 const Spinner = function () {
   return (
-    <div className='flex h-screen'>
+    <div className='absolute left-0 flex top-0 bg-white h-screen w-screen z-1'>
       <div role='status' className='m-auto'>
         <svg
           aria-hidden='true'
-          className='inline w-10 h-10 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-red-600'
+          className='inline w-10 h-10 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-black'
           viewBox='0 0 100 101'
           fill='none'
           xmlns='http://www.w3.org/2000/svg'

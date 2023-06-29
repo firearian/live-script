@@ -3,7 +3,7 @@ import { EditorContent } from '@tiptap/react';
 import MenuBar from '../Components/MenuBar';
 import { ConnectionStatus } from '../Constants';
 import useEditor from '../useEditor';
-import useWebSocketManager from '../useWebSocketManager'; // Import the new custom hook
+import useWebSocketManager from '../useWebSocketManager';
 
 function Tiptap() {
   const { wsStatus, provider } = useWebSocketManager();
