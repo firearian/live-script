@@ -10,8 +10,7 @@ import ErrorPage from './error404';
 import Spinner from './Components/Spinner';
 
 function Routers() {
-  const { isAuthenticated, setIsAuthenticated, setCurrentUser, setCurrentRoom } =
-    useCurrentContext();
+  const { isAuthenticated } = useCurrentContext();
   const { user } = useLocalStorageContext();
   const { wsStatus, provider } = useWebSocketManager();
   const { status, document } = provider ?? {};
@@ -31,15 +30,7 @@ function Routers() {
   const appRouter = createBrowserRouter([
     {
       path: '/',
-      element: isAuthenticated ? (
-        editorComponent()
-      ) : (
-        <LoginPage
-          setCurrentUser={setCurrentUser}
-          setIsAuthenticated={setIsAuthenticated}
-          setCurrentRoom={setCurrentRoom}
-        />
-      ),
+      element: isAuthenticated ? editorComponent() : <LoginPage />,
       errorElement: <ErrorPage />,
     },
     {

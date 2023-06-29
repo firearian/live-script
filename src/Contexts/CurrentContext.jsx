@@ -7,18 +7,16 @@ export const useCurrentContext = () => useContext(CurrentContext);
 
 export function CurrentContextProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
   const [currentRoom, setCurrentRoom] = useState(null);
 
   useEffect(() => {
-    console.log('isAUthe: ', isAuthenticated);
+    console.log('Authentication State: ', isAuthenticated);
   }, [isAuthenticated]);
 
-  const isLoggedOut = !!(isAuthenticated && currentRoom && currentUser);
+  const isLoggedOut = !!(isAuthenticated && currentRoom);
 
   const removeCurrentContext = () => {
     setCurrentRoom(null);
-    setCurrentUser(null);
     setIsAuthenticated(false);
   };
 
@@ -32,14 +30,12 @@ export function CurrentContextProvider({ children }) {
     () => ({
       isAuthenticated,
       setIsAuthenticated,
-      currentUser,
-      setCurrentUser,
       currentRoom,
       setCurrentRoom,
       removeCurrentContext,
       changeRoom,
     }),
-    [isAuthenticated, currentUser, currentRoom],
+    [isAuthenticated, currentRoom],
   );
 
   return (

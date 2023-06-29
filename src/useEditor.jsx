@@ -7,13 +7,13 @@ import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 import Highlight from '@tiptap/extension-highlight';
 import { Color } from '@tiptap/extension-color';
 import TextStyle from '@tiptap/extension-text-style';
-import { useCurrentContext } from './Contexts/CurrentContext';
+import { useLocalStorageContext } from './Contexts/LocalStorageContext';
 import ScriptType from './Extensions/ScriptType';
 
 const editorInstance = { value: null };
 
 const useEditor = (isConnected, yDoc, websocketProvider) => {
-  const { currentUser } = useCurrentContext();
+  const { user } = useLocalStorageContext();
   editorInstance.value = useMemo(() => {
     if (isConnected) {
       return new Editor({
@@ -43,10 +43,10 @@ const useEditor = (isConnected, yDoc, websocketProvider) => {
   }, [isConnected, yDoc, websocketProvider]);
 
   useEffect(() => {
-    if (editorInstance.value && currentUser) {
-      editorInstance.value.chain().focus().updateUser(currentUser).run();
+    if (editorInstance.value && user) {
+      editorInstance.value.chain().focus().updateUser(user).run();
     }
-  }, [currentUser, editorInstance]);
+  }, [user, editorInstance]);
 
   return editorInstance;
 };
