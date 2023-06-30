@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-const InputField = function ({ id, type, value, onChange, placeholder }) {
+function InputField({ id, type, value, onChange, placeholder }) {
   return (
     <div>
       <label htmlFor={id}>
@@ -19,7 +19,7 @@ const InputField = function ({ id, type, value, onChange, placeholder }) {
       </label>
     </div>
   );
-};
+}
 InputField.propTypes = {
   id: PropTypes.string,
   type: PropTypes.string,

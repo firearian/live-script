@@ -2,7 +2,7 @@
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { useCurrentContext } from './Contexts/CurrentContext';
 import { useLocalStorageContext } from './Contexts/LocalStorageContext';
-import useWebSocketManager from './useWebSocketManager'; // Import the new custom hook
+import { useWebSocketContext } from './Contexts/WebSocketContext';
 import EditorContainer from './Pages/EditorContainer';
 import Editor from './Pages/Editor';
 import LoginPage from './Pages/Login';
@@ -10,15 +10,15 @@ import ErrorPage from './error404';
 import Spinner from './Components/Spinner';
 
 function Routers() {
-  const { isAuthenticated, isDocLoaded } = useCurrentContext();
+  const { isDocLoaded, isAuthenticated } = useCurrentContext();
   const { user } = useLocalStorageContext();
-  const { wsStatus, provider } = useWebSocketManager();
-  const { status, document } = provider ?? {};
+  const { status, provider } = useWebSocketContext();
+  const { document } = provider ?? {};
 
   const editorComponent = () => {
     const ed = (
       <>
-        {isDocLoaded && <Spinner />}
+        {!isDocLoaded && <Spinner />}
         <Editor
           websocketProvider={provider}
           currentUser={user}
@@ -27,7 +27,7 @@ function Routers() {
         />
       </>
     );
-    return wsStatus === 'connected' ? <EditorContainer>{ed}</EditorContainer> : <Spinner />;
+    return status === 'connected' ? <EditorContainer>{ed}</EditorContainer> : <Spinner />;
   };
   const appRouter = createBrowserRouter([
     {

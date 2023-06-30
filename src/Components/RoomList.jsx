@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-const RoomList = function ({ roomArray, selectedRoom, handleRoomClick }) {
+function RoomList({ roomArray, selectedRoom, handleRoomClick }) {
   return (
     <ul>
       {roomArray?.map((element) => (
@@ -24,7 +24,7 @@ const RoomList = function ({ roomArray, selectedRoom, handleRoomClick }) {
       ))}
     </ul>
   );
-};
+}
 RoomList.propTypes = {
   roomArray: PropTypes.arrayOf(PropTypes.string),
   selectedRoom: PropTypes.string,

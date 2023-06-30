@@ -30,7 +30,6 @@ function Login() {
   const history = useNavigate();
 
   const handleChange = (newState) => {
-    console.log('target: ', newState);
     setErrorData({ ...errorData, ...newState });
   };
 
@@ -58,14 +57,9 @@ function Login() {
         error: errorContent,
         errorCode: err.cause.response.status,
       });
-      console.log('test');
     }
     setPassword('');
   };
-
-  useEffect(() => {
-    console.log('error: ', errorData);
-  }, [errorData]);
 
   return (
     <div className='login-container min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8'>

@@ -14,8 +14,9 @@ import ScriptType from './Extensions/ScriptType';
 const editorInstance = { value: null };
 
 const useEditor = (isConnected, yDoc, websocketProvider) => {
-  const { setIsDocLoaded } = useCurrentContext();
+  const { setIsDocLoaded, currentRoom } = useCurrentContext();
   const { user } = useLocalStorageContext();
+
   editorInstance.value = useMemo(() => {
     if (isConnected) {
       return new Editor({
@@ -38,11 +39,28 @@ const useEditor = (isConnected, yDoc, websocketProvider) => {
           }),
           TextStyle,
         ],
+        // onCreate() {
+        //   console.log('Editor onCreate!');
+        //   console.log('This onCreate: ', this);
+        // },
+        // onBeforeCreate() {
+        //   console.log('Editor onBeforeCreate!');
+        // },
+        // onSelectionUpdate() {
+        //   console.log('Editor onSelectionUpdate');
+        // },
+        // onDestroy() {
+        //   console.log('Editor onDestroy!');
+        // },
+        // onFocus() {
+        //   console.log('Editor onFocus');
+        // },
+        // onBlur() {
+        //   console.log('Editor onBlur');
+        // },
         onUpdate(event) {
           if (event?.editor?.view?.state?.doc?.textContent) {
             setIsDocLoaded(true);
-          } else {
-            setIsDocLoaded(false);
           }
         },
         content: '',

@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import PropTypes from 'prop-types';
-import { Fragment, useRef } from 'react';
+import { useRef } from 'react';
 import remixiconUrl from './remixicon.symbol.svg';
 import './MenuItem.css';
 

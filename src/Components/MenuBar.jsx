@@ -2,12 +2,12 @@ import { Editor } from '@tiptap/react';
 import PropTypes from 'prop-types';
 import './MenuBar.css';
 
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 
 import MenuItem from './MenuItem';
 import ColorPicker from './ColorPicker';
 
-const MenuBar = function ({ editor }) {
+function MenuBar({ editor }) {
   const items = [
     {
       icon: 'bold',
@@ -43,7 +43,7 @@ const MenuBar = function ({ editor }) {
     {
       icon: 'paint-line',
       title: 'remove-color',
-      action: (event) => editor.chain().focus().unsetColor().run(),
+      action: () => editor.chain().focus().unsetColor().run(),
       isActive: () => editor.isActive('remove-color'),
     },
     {
@@ -76,7 +76,7 @@ const MenuBar = function ({ editor }) {
     {
       icon: 'arrow-go-forward-line',
       title: 'Redo',
-      action: () => editor.chain().enter().focus().run(), // editor.chain().focus().redo().run(),
+      action: () => editor.chain().focus().redo().run(),
     },
   ];
 
@@ -94,7 +94,7 @@ const MenuBar = function ({ editor }) {
       })}
     </div>
   );
-};
+}
 
 MenuBar.propTypes = {
   editor: PropTypes.instanceOf(Editor),

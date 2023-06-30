@@ -1,45 +1,90 @@
-import { createContext, useContext, useState, useMemo, useEffect } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+  useRef,
+} from 'react';
 import PropTypes from 'prop-types';
+import { HocuspocusProvider } from '@hocuspocus/provider';
+import * as Y from 'yjs';
+import websocketProvider from './WebSocketProvider';
+import { useCurrentContext } from './CurrentContext';
+import { useLocalStorageContext } from './LocalStorageContext';
 
 export const WebSocketContext = createContext();
 
 export const useWebSocketContext = () => useContext(WebSocketContext);
 
 export function WebSocketContextProvider({ children }) {
-  const [provider, setProvider] = useState(null);
-  const [webSocketRoom, setWebSocketRoom] = useState('');
-  const [shouldReconnect, setShouldReconnect] = useState('');
+  const { isAuthenticated, currentRoom } = useCurrentContext();
+  const { token } = useLocalStorageContext();
+  const providerRef = useRef([]);
+  const [status, setStatus] = useState(providerRef?.status || '');
+  const [version, setVersion] = useState(0);
 
-  const connectWS = () => provider.connect();
+  const destroyWS = useCallback(() => providerRef.current?.destroy(), []);
+
+  const providerConfig = useCallback(() => {
+    const yDoc = new Y.Doc();
+    const newProvider = new HocuspocusProvider({
+      websocketProvider: websocketProvider || null,
+      document: yDoc,
+      token: token || null,
+      name: currentRoom || '',
+      onStatus(event) {
+        setStatus(event.status);
+      },
+    });
+    providerRef.current = newProvider;
+    setVersion(version + 1);
+  }, [token, currentRoom]);
 
   useEffect(() => {
-    console.log('provider changed within websocket: ', provider);
-  }, [provider]);
+    providerConfig();
+  }, []);
+
+  useEffect(() => {
+    if (providerRef.current) {
+      providerRef.current?.connect();
+    }
+  }, [version]);
+
+  useEffect(() => {
+    if (isAuthenticated && status === 'disconnected') {
+      providerConfig();
+    }
+  }, [isAuthenticated, status]);
 
   const resetProvider = () => {
-    provider.destroy();
-    setProvider(null);
-    setWebSocketRoom('');
-    setShouldReconnect('');
+    destroyWS();
+    providerRef.current = null;
+    setVersion(0);
   };
 
-  const changeRoom = (name) => {
-    console.log('provider deleted.');
-    provider.destroy();
-    provider.configuration.name = name;
-    setShouldReconnect('configure');
+  const modifyRoom = () => {
+    destroyWS();
+    providerRef.current = null;
+    setVersion(0);
+    providerConfig();
   };
+
+  useEffect(() => {
+    if (
+      providerRef.current &&
+      currentRoom &&
+      currentRoom !== providerRef.current?.configuration.name
+    ) {
+      modifyRoom();
+    }
+  }, [currentRoom]);
 
   const value = useMemo(() => ({
-    provider,
-    setProvider,
+    provider: providerRef.current,
     resetProvider,
-    connectWS,
-    changeRoom,
-    webSocketRoom,
-    setWebSocketRoom,
-    shouldReconnect,
-    setShouldReconnect,
+    status,
   }));
 
   return <WebSocketContext.Provider value={value}>{children}</WebSocketContext.Provider>;

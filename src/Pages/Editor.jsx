@@ -3,21 +3,21 @@ import { EditorContent } from '@tiptap/react';
 import MenuBar from '../Components/MenuBar';
 import { ConnectionStatus } from '../Constants';
 import useEditor from '../useEditor';
-import useWebSocketManager from '../useWebSocketManager';
+import { useWebSocketContext } from '../Contexts/WebSocketContext';
 
 function Tiptap() {
-  const { wsStatus, provider } = useWebSocketManager();
+  const { status, provider } = useWebSocketContext();
   const { document } = provider ?? {};
 
   const editorInstance = useEditor(
-    wsStatus === ConnectionStatus.CONNECTED,
+    status === ConnectionStatus.CONNECTED,
     document,
     provider,
   )?.value;
 
   return (
     <div className='editor'>
-      {wsStatus === ConnectionStatus.CONNECTED && (
+      {status === ConnectionStatus.CONNECTED && (
         <>
           <EditorContent className='editor bg-white' editor={editorInstance} />
           <MenuBar editor={editorInstance} />

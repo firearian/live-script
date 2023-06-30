@@ -1,4 +1,4 @@
-const Spinner = function () {
+function Spinner() {
   return (
     <div className='absolute left-0 flex top-0 bg-white h-screen w-screen z-1'>
       <div role='status' className='m-auto'>
@@ -22,5 +22,5 @@ const Spinner = function () {
       </div>
     </div>
   );
-};
+}
 export default Spinner;

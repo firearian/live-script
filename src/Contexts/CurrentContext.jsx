@@ -1,4 +1,4 @@
-import { createContext, useState, useMemo, useContext, useEffect } from 'react';
+import { createContext, useState, useMemo, useContext } from 'react';
 import { PropTypes } from 'prop-types';
 
 export const CurrentContext = createContext();
@@ -9,22 +9,13 @@ export function CurrentContextProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentRoom, setCurrentRoom] = useState(null);
   const [isDocLoaded, setIsDocLoaded] = useState(false);
-
-  useEffect(() => {
-    console.log('Authentication State: ', isAuthenticated);
-  }, [isAuthenticated]);
+  const [isNewDoc, setIsNewDoc] = useState(false);
 
   const isLoggedOut = !!(isAuthenticated && currentRoom);
 
   const removeCurrentContext = () => {
     setCurrentRoom(null);
     setIsAuthenticated(false);
-  };
-
-  const changeRoom = (newRoom) => {
-    if (newRoom !== currentRoom) {
-      setCurrentRoom(newRoom);
-    }
   };
 
   const value = useMemo(
@@ -34,9 +25,10 @@ export function CurrentContextProvider({ children }) {
       currentRoom,
       setCurrentRoom,
       removeCurrentContext,
-      changeRoom,
       isDocLoaded,
       setIsDocLoaded,
+      isNewDoc,
+      setIsNewDoc,
     }),
     [isAuthenticated, currentRoom, isDocLoaded],
   );

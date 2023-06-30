@@ -1,16 +1,17 @@
 import PropTypes from 'prop-types';
 import MenuButton from './SVG';
 import RoomList from './RoomList';
+import NewRoom from './NewRoom';
 
-const MenuContainer = function ({
+function MenuContainer({
   isOpen,
   toggleMenu,
   roomArray,
   selectedRoom,
   handleRoomClick,
   isVisible,
+  setIsOpen,
 }) {
-  console.log('rooom', roomArray);
   return (
     <div className='contents'>
       {isVisible && (
@@ -37,13 +38,15 @@ const MenuContainer = function ({
                 selectedRooms={selectedRoom}
                 handleRoomClick={handleRoomClick}
               />
+              <div className='border w-4/6 mx-auto rounded-3xl -bottom-2' />
+              <NewRoom setIsOpen={setIsOpen} />
             </div>
           </div>
         </div>
       </div>
     </div>
   );
-};
+}
 MenuContainer.propTypes = {
   isOpen: PropTypes.bool,
   toggleMenu: PropTypes.func,
@@ -51,6 +54,7 @@ MenuContainer.propTypes = {
   selectedRoom: PropTypes.string,
   handleRoomClick: PropTypes.func,
   isVisible: PropTypes.bool,
+  setIsOpen: PropTypes.func,
 };
 
 MenuContainer.defaultProps = {
@@ -60,5 +64,6 @@ MenuContainer.defaultProps = {
   selectedRoom: '',
   handleRoomClick: () => {},
   isVisible: null,
+  setIsOpen: () => {},
 };
 export default MenuContainer;

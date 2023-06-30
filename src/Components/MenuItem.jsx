@@ -4,7 +4,7 @@ import remixiconUrl from './remixicon.symbol.svg';
 import './MenuItem.css';
 
 export default function MenuItem({ item }) {
-  const { icon, title, action, value, isActive } = item;
+  const { icon, title, action, isActive } = item;
 
   return (
     <button
@@ -25,7 +25,6 @@ MenuItem.propTypes = {
     icon: PropTypes.string,
     title: PropTypes.string,
     action: PropTypes.func,
-    value: PropTypes.string,
     isActive: PropTypes.func,
   }),
 };
@@ -35,7 +34,6 @@ MenuItem.defaultProps = {
     icon: '',
     title: '',
     action: null,
-    value: '',
     isActive: null,
   },
 };

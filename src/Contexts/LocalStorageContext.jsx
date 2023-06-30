@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import useLocalStorage from '../HelperFunctions';
+import useLocalStorage from '../LocalStorageFunctions';
 
 export const LocalStorageContext = createContext();
 

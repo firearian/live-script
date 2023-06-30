@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useCurrentContext } from './Contexts/CurrentContext';
-import { useWebSocketContext } from './Contexts/WebSocketContext';
 import { useLocalStorageContext } from './Contexts/LocalStorageContext';
+import useChangeRoom from './helperFunctions';
 import useLogout from './useLogout';
 import Routers from './routes';
 import LogoutButton from './Components/LogoutButton';
@@ -11,9 +11,8 @@ import './App.css';
 import './index.css';
 
 function App() {
-  const { isAuthenticated, setIsAuthenticated, currentRoom, setCurrentRoom, selectedRoom } =
-    useCurrentContext();
-  const { changeRoom } = useWebSocketContext();
+  const { isAuthenticated, setIsAuthenticated, currentRoom, selectedRoom } = useCurrentContext();
+  const { handleChangeRoom } = useChangeRoom();
   const [isOpen, setIsOpen] = useState(false);
   const { token, user } = useLocalStorageContext();
 
@@ -26,10 +25,7 @@ function App() {
   }, [user, currentRoom, token, setIsAuthenticated]);
 
   const handleRoomClick = (newRoom) => {
-    if (newRoom !== currentRoom) {
-      setCurrentRoom(newRoom);
-      changeRoom(newRoom);
-    }
+    handleChangeRoom(newRoom);
     setIsOpen(false);
   };
 
@@ -47,6 +43,7 @@ function App() {
             roomArray={user.documents}
             selectedRooms={selectedRoom}
             handleRoomClick={handleRoomClick}
+            setIsOpen={setIsOpen}
             isVisible={isAuthenticated}
           />
         )}
