@@ -49,14 +49,21 @@ function Login() {
     } catch (err) {
       // Handle unsuccessful login (e.g., display error message)
       setIsAuthenticated(false);
-      const errorContent =
-        ERROR_MESSAGES[err.cause.response.status] ||
-        HTTP_STATUS_CODES[err.cause.response.status] ||
-        'An error occurred. Please try again later.';
-      handleChange({
-        error: errorContent,
-        errorCode: err.cause.response.status,
-      });
+      if (err.cause.code === 'ERR_NETWORK') {
+        handleChange({
+          error: 'Server unresponsive. Please ask the admin to restart it',
+          errorCode: '500',
+        });
+      } else {
+        const errorContent =
+          ERROR_MESSAGES[err.cause.response.status] ||
+          HTTP_STATUS_CODES[err.cause.response.status] ||
+          'An error occurred. Please try again later.';
+        handleChange({
+          error: errorContent,
+          errorCode: err.cause.response.status,
+        });
+      }
     }
     setPassword('');
   };
