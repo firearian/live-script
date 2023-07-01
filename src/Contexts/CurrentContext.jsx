@@ -15,6 +15,7 @@ export function CurrentContextProvider({ children }) {
   const removeCurrentContext = () => {
     setCurrentRoom(null);
     setIsAuthenticated(false);
+    console.log('setting false');
     setIsDocLoaded(false);
   };
 
