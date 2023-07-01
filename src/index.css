@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.contents {
+  font-family: 'courier';
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
@@ -123,7 +127,6 @@ code {
   height: 20px;
   position: absolute;
   width: 20px;
-  left: 50%;
   transform: translateX(-250%);
 }
 .room-title {
@@ -135,14 +138,21 @@ code {
   font-size: larger;
 }
 .header-container {
-  justify-content: space-between;
+  justify-content: center;
   display: flex;
   width: inherit;
   align-items: center;
+  font-family: courier;
 }
+.MuiMenu-list li {
+  padding: 4px 12px !important;
+  font-family: courier;
+}
+
 .MuiMenu-list {
-  padding-top: 4px;
-  padding-bottom: 4px;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+  left: 783;
 }
 
 .container {
@@ -218,7 +228,7 @@ code {
   flex-grow: 1;
 }
 .menu-items li:hover {
-  background-color: #d0ebff;
+  background-color: #c8c8c88e;
   font-weight: bold;
 }
 .menu-items li button {
@@ -251,4 +261,23 @@ code {
   padding: 0.1rem 0.4rem;
   background: white;
   accent-color: black;
+}
+.new-room-container {
+  display: flex;
+  flex-direction: column;
+  padding-top: 15px;
+  align-items: center;
+}
+.new-room-container button {
+  font-family: inherit;
+  font-size: 0.7rem;
+  color: #000;
+  border: 1px solid black !important;
+  accent-color: black;
+}
+.new-room-container button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.new-room-container .MuiTextField-root {
+  padding-bottom: 5px;
 }

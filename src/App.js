@@ -11,7 +11,7 @@ import './App.css';
 import './index.css';
 
 function App() {
-  const { isAuthenticated, setIsAuthenticated, currentRoom, selectedRoom } = useCurrentContext();
+  const { isAuthenticated, setIsAuthenticated, currentRoom } = useCurrentContext();
   const { handleChangeRoom } = useChangeRoom();
   const [isOpen, setIsOpen] = useState(false);
   const { token, user } = useLocalStorageContext();
@@ -40,8 +40,6 @@ function App() {
           <MenuContainer
             isOpen={isOpen}
             toggleMenu={toggleMenu}
-            roomArray={user.documents}
-            selectedRooms={selectedRoom}
             handleRoomClick={handleRoomClick}
             setIsOpen={setIsOpen}
             isVisible={isAuthenticated}

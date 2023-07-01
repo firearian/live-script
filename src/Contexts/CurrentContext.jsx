@@ -9,13 +9,13 @@ export function CurrentContextProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentRoom, setCurrentRoom] = useState(null);
   const [isDocLoaded, setIsDocLoaded] = useState(false);
-  const [isNewDoc, setIsNewDoc] = useState(false);
 
   const isLoggedOut = !!(isAuthenticated && currentRoom);
 
   const removeCurrentContext = () => {
     setCurrentRoom(null);
     setIsAuthenticated(false);
+    setIsDocLoaded(false);
   };
 
   const value = useMemo(
@@ -27,8 +27,6 @@ export function CurrentContextProvider({ children }) {
       removeCurrentContext,
       isDocLoaded,
       setIsDocLoaded,
-      isNewDoc,
-      setIsNewDoc,
     }),
     [isAuthenticated, currentRoom, isDocLoaded],
   );

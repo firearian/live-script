@@ -24,6 +24,10 @@ module.exports = {
         // prettier-ignore
         '1': '1001',
       },
+      borderWidth: {
+        // prettier-ignore
+        '1': '0.01rem',
+      },
     },
   },
   plugins: [elements],

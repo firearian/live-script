@@ -1,11 +1,18 @@
 import { useCurrentContext } from './Contexts/CurrentContext';
+import { useLocalStorageContext } from './Contexts/LocalStorageContext';
 
 const useChangeRoom = () => {
   const { currentRoom, setCurrentRoom, setIsDocLoaded } = useCurrentContext();
+  const { user } = useLocalStorageContext();
 
   const handleChangeRoom = (newRoom) => {
+    if (!newRoom) {
+      return;
+    }
     if (newRoom !== currentRoom) {
-      setIsDocLoaded(false);
+      if (user.documents.includes(newRoom)) {
+        setIsDocLoaded(false);
+      }
       setCurrentRoom(newRoom);
     }
   };

@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TextField, Button } from '@mui/material';
 import useChangeRoom from '../helperFunctions';
 
-function NewRoom({ setIsOpen }) {
+function NewRoom({ isOpen, setIsOpen }) {
   const { handleChangeRoom } = useChangeRoom();
   const [textValue, setTextValue] = useState('');
 
@@ -11,31 +11,42 @@ function NewRoom({ setIsOpen }) {
     setTextValue(value);
   };
 
+  useEffect(() => {
+    if (!isOpen) {
+      setTextValue('');
+    }
+  }, [isOpen]);
+
   const handleSubmit = () => {
     handleChangeRoom(textValue);
+    setTextValue('');
     setIsOpen(false);
   };
 
   return (
-    <>
+    <div className='new-room-container'>
       <TextField
         hiddenLabel
         id='filled-hidden-label-small'
         size='small'
-        placeholder='New Room Name'
-        className='pt-4'
+        placeholder='Find/New Room'
         value={textValue}
+        inputProps={{ style: { fontSize: 12 } }}
         onChange={(event) => handleChange(event.target.value)}
       />
-      <Button onClick={handleSubmit} />
-    </>
+      <Button size='small' variant='outlined' onClick={handleSubmit} aria-haspopup='true'>
+        Search/Create
+      </Button>
+    </div>
   );
 }
 NewRoom.propTypes = {
+  isOpen: PropTypes.bool,
   setIsOpen: PropTypes.func,
 };
 
 NewRoom.defaultProps = {
+  isOpen: null,
   setIsOpen: () => {},
 };
 export default NewRoom;

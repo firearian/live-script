@@ -1,17 +1,25 @@
+import { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import MenuButton from './SVG';
 import RoomList from './RoomList';
 import NewRoom from './NewRoom';
 
-function MenuContainer({
-  isOpen,
-  toggleMenu,
-  roomArray,
-  selectedRoom,
-  handleRoomClick,
-  isVisible,
-  setIsOpen,
-}) {
+function MenuContainer({ isOpen, toggleMenu, handleRoomClick, isVisible, setIsOpen }) {
+  const modalRef = useRef();
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        handleRoomClick();
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, []);
   return (
     <div className='contents'>
       {isVisible && (
@@ -24,7 +32,8 @@ function MenuContainer({
         </div>
       )}
       <div
-        className={`menu-container absolute left-0 bg-white top-16 m-4 shadow rounded-lg h-100 border-1 ${
+        ref={modalRef}
+        className={`menu-container absolute left-0 bg-white top-16 m-4 shadow border-black rounded-lg h-100 border-1 ${
           isOpen ? 'open z1000 pe-a pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       >
@@ -33,13 +42,9 @@ function MenuContainer({
             <div className=''>
               <h2 className='top-5 my-2'>Available Rooms</h2>
               <div className='border w-4/6 mx-auto rounded-3xl -bottom-2' />
-              <RoomList
-                roomArray={roomArray}
-                selectedRooms={selectedRoom}
-                handleRoomClick={handleRoomClick}
-              />
+              <RoomList handleRoomClick={handleRoomClick} />
               <div className='border w-4/6 mx-auto rounded-3xl -bottom-2' />
-              <NewRoom setIsOpen={setIsOpen} />
+              <NewRoom isOpen={isOpen} setIsOpen={setIsOpen} />
             </div>
           </div>
         </div>
@@ -50,8 +55,6 @@ function MenuContainer({
 MenuContainer.propTypes = {
   isOpen: PropTypes.bool,
   toggleMenu: PropTypes.func,
-  roomArray: PropTypes.arrayOf(PropTypes.string),
-  selectedRoom: PropTypes.string,
   handleRoomClick: PropTypes.func,
   isVisible: PropTypes.bool,
   setIsOpen: PropTypes.func,
@@ -60,8 +63,6 @@ MenuContainer.propTypes = {
 MenuContainer.defaultProps = {
   isOpen: null,
   toggleMenu: () => {},
-  roomArray: PropTypes.arrayOf(PropTypes.string),
-  selectedRoom: '',
   handleRoomClick: () => {},
   isVisible: null,
   setIsOpen: () => {},

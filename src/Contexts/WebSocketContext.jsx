@@ -18,36 +18,41 @@ export const WebSocketContext = createContext();
 
 export const useWebSocketContext = () => useContext(WebSocketContext);
 
+const destroyWS = (ws) => ws.destroy();
+
 export function WebSocketContextProvider({ children }) {
   const { isAuthenticated, currentRoom } = useCurrentContext();
   const { token } = useLocalStorageContext();
   const providerRef = useRef([]);
-  const [status, setStatus] = useState(providerRef?.status || '');
+  const [status, setStatus] = useState(providerRef?.current?.status || '');
   const [version, setVersion] = useState(0);
-
-  const destroyWS = useCallback(() => providerRef.current?.destroy(), []);
 
   const providerConfig = useCallback(() => {
     const yDoc = new Y.Doc();
+    if (providerRef.current?.configuration) {
+      destroyWS(providerRef.current);
+      providerRef.current = null;
+    }
     const newProvider = new HocuspocusProvider({
       websocketProvider: websocketProvider || null,
       document: yDoc,
-      token: token || null,
+      token,
       name: currentRoom || '',
       onStatus(event) {
         setStatus(event.status);
       },
     });
+    console.log('setting exitty: ', newProvider);
     providerRef.current = newProvider;
     setVersion(version + 1);
   }, [token, currentRoom]);
 
-  useEffect(() => {
-    providerConfig();
-  }, []);
+  // useEffect(() => {
+  //   providerConfig();
+  // }, []);
 
   useEffect(() => {
-    if (providerRef.current) {
+    if (providerRef.current?.configuration) {
       providerRef.current?.connect();
     }
   }, [version]);
@@ -58,15 +63,13 @@ export function WebSocketContextProvider({ children }) {
     }
   }, [isAuthenticated, status]);
 
-  const resetProvider = () => {
-    destroyWS();
-    providerRef.current = null;
-    setVersion(0);
+  const resetProvider = async () => {
+    await providerRef.current?.configuration?.websocketProvider?.disconnect();
+    await setVersion(0);
+    await setStatus('');
   };
 
   const modifyRoom = () => {
-    destroyWS();
-    providerRef.current = null;
     setVersion(0);
     providerConfig();
   };
@@ -78,14 +81,19 @@ export function WebSocketContextProvider({ children }) {
       currentRoom !== providerRef.current?.configuration.name
     ) {
       modifyRoom();
+    } else if (currentRoom === null) {
+      providerConfig();
     }
   }, [currentRoom]);
 
-  const value = useMemo(() => ({
-    provider: providerRef.current,
-    resetProvider,
-    status,
-  }));
+  const value = useMemo(
+    () => ({
+      provider: providerRef.current,
+      resetProvider,
+      status,
+    }),
+    [resetProvider, status],
+  );
 
   return <WebSocketContext.Provider value={value}>{children}</WebSocketContext.Provider>;
 }
