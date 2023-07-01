@@ -14,8 +14,8 @@ import ScriptType from './Extensions/ScriptType';
 const editorInstance = { value: null };
 
 const useEditor = (isConnected, yDoc, websocketProvider) => {
-  const { setIsDocLoaded, currentRoom } = useCurrentContext();
-  const { user } = useLocalStorageContext();
+  const { setIsDocLoaded } = useCurrentContext();
+  const { user, setUser } = useLocalStorageContext();
 
   editorInstance.value = useMemo(() => {
     if (isConnected) {
@@ -60,6 +60,11 @@ const useEditor = (isConnected, yDoc, websocketProvider) => {
         // },
         onUpdate(event) {
           if (event?.editor?.view?.state?.doc?.textContent) {
+            if (!user?.documents.includes(websocketProvider.configuration.name)) {
+              const newUser = user;
+              newUser.documents.push(websocketProvider.configuration.name);
+              setUser(newUser);
+            }
             setIsDocLoaded(true);
           }
         },
