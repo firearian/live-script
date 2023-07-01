@@ -59,14 +59,15 @@ const useEditor = (isConnected, yDoc, websocketProvider) => {
         //   console.log('Editor onBlur');
         // },
         onUpdate(event) {
-          if (event?.editor?.view?.state?.doc?.textContent) {
-            if (!user?.documents.includes(websocketProvider.configuration.name)) {
-              const newUser = user;
-              newUser.documents.push(websocketProvider.configuration.name);
-              setUser(newUser);
-            }
-            setIsDocLoaded(true);
+          if (!event?.editor?.view?.state?.doc?.textContent) {
+            return;
           }
+          if (!user?.documents.includes(websocketProvider.configuration.name)) {
+            const newUser = user;
+            newUser.documents.push(websocketProvider.configuration.name);
+            setUser(newUser);
+          }
+          setIsDocLoaded(true);
         },
         content: '',
       });

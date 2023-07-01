@@ -144,6 +144,24 @@ code {
   align-items: center;
   font-family: courier;
 }
+.online-users {
+  left: 1rem;
+  position: absolute;
+  font-size: xx-small;
+  transform: translate(0, 150%);
+}
+.online-users::before {
+  background: #77ff65 !important;
+  border-radius: 50%;
+  content: ' ';
+  display: inline-block;
+  flex: 0 0 auto;
+  margin-bottom: -0.1rem;
+  margin-right: 0.25rem;
+  height: 0.5rem;
+  width: 0.5rem;
+}
+
 .MuiMenu-list li {
   padding: 4px 12px !important;
   font-family: courier;

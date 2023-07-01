@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useCurrentContext } from './Contexts/CurrentContext';
 import { useLocalStorageContext } from './Contexts/LocalStorageContext';
+import { useWebSocketContext } from './Contexts/WebSocketContext';
 import useChangeRoom from './helperFunctions';
 import useLogout from './useLogout';
 import Routers from './routes';
@@ -12,9 +13,11 @@ import './index.css';
 
 function App() {
   const { isAuthenticated, setIsAuthenticated, currentRoom } = useCurrentContext();
+  const { provider } = useWebSocketContext();
   const { handleChangeRoom } = useChangeRoom();
   const [isOpen, setIsOpen] = useState(false);
   const { token, user } = useLocalStorageContext();
+  const userCount = provider?.configuration?.awareness.states.size;
 
   const { handleLogout } = useLogout();
 
@@ -49,12 +52,18 @@ function App() {
           {user && (
             <div className='header-container'>
               {isAuthenticated && (
-                <div className='room-title'>
-                  <svg>
-                    <use xlinkHref={`${remixiconUrl}#ri-quill-pen-fill`} />
-                  </svg>
-                  <h>{currentRoom}</h>
-                </div>
+                <>
+                  <div className='online-users'>
+                    <i>{user.name}</i> online with <b>{userCount - 1}</b> other users in{' '}
+                    <b>{currentRoom}</b>
+                  </div>
+                  <div className='room-title'>
+                    <svg>
+                      <use xlinkHref={`${remixiconUrl}#ri-quill-pen-fill`} />
+                    </svg>
+                    <h>{currentRoom}</h>
+                  </div>
+                </>
               )}
               <LogoutButton closeApp={handleLogout} />
             </div>

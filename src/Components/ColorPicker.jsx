@@ -20,7 +20,7 @@ export default function ColorPicker({ item }) {
         id='color-menu-item'
         className={`menu-item${isActive && isActive() ? ' is-active' : ''} opacity-0 absolute`}
         onInput={action}
-        value={value}
+        value={value || '#ffffff'}
       />
       <button
         type='button'
