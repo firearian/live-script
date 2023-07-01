@@ -59,6 +59,7 @@ export function WebSocketContextProvider({ children }) {
 
   useEffect(() => {
     if (isAuthenticated && status === 'disconnected') {
+      console.log('11');
       providerConfig();
     }
   }, [isAuthenticated, status]);
@@ -71,6 +72,7 @@ export function WebSocketContextProvider({ children }) {
 
   const modifyRoom = () => {
     setVersion(0);
+    console.log('12');
     providerConfig();
   };
 
@@ -82,6 +84,7 @@ export function WebSocketContextProvider({ children }) {
     ) {
       modifyRoom();
     } else if (currentRoom === null) {
+      console.log('13');
       providerConfig();
     }
   }, [currentRoom]);
