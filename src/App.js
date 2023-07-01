@@ -49,12 +49,12 @@ function App() {
           {user && (
             <div className='header-container'>
               {isAuthenticated && (
-                <>
+                <div className='room-title'>
                   <svg>
                     <use xlinkHref={`${remixiconUrl}#ri-quill-pen-fill`} />
                   </svg>
-                  <h className='room-title'>{currentRoom}</h>
-                </>
+                  <h>{currentRoom}</h>
+                </div>
               )}
               <LogoutButton closeApp={handleLogout} />
             </div>
