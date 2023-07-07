@@ -42,7 +42,6 @@ export function WebSocketContextProvider({ children }) {
         setStatus(event.status);
       },
     });
-    console.log('setting exitty: ', newProvider);
     providerRef.current = newProvider;
     setVersion(version + 1);
   }, [token, currentRoom]);
@@ -59,7 +58,6 @@ export function WebSocketContextProvider({ children }) {
 
   useEffect(() => {
     if (isAuthenticated && status === 'disconnected') {
-      console.log('11');
       providerConfig();
     }
   }, [isAuthenticated, status]);

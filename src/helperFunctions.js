@@ -11,7 +11,6 @@ const useChangeRoom = () => {
     }
     if (newRoom !== currentRoom) {
       if (user.documents.includes(newRoom)) {
-        console.log('setting false');
         setIsDocLoaded(false);
       }
       setCurrentRoom(newRoom);
