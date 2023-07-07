@@ -97,6 +97,22 @@ const ScriptType = Extension.create({
         this.editor.commands.setParentheses();
         return true;
       },
+      'Shift-Tab': () => {
+        this.editor.commands.setScriptTypeAuto(false, true);
+        this.editor.commands.setParentheses(true);
+        return true;
+      },
+      'Shift-Enter': () => {
+        this.editor
+          .chain()
+          .newlineInCode()
+          .createParagraphNear()
+          .liftEmptyBlock()
+          .splitBlock()
+          .focus()
+          .run();
+        return true;
+      },
       Enter: () => {
         this.editor
           .chain()
@@ -121,29 +137,33 @@ const ScriptType = Extension.create({
   // setScriptTypeManual: parent function to call to apply a specific script type
   addCommands() {
     return {
-      getScriptType: (currentScriptType, isNewLine) => () => {
-        const { scriptTypes } = this.options;
+      getScriptType:
+        (currentScriptType, isNewLine, isReverse = false) =>
+        () => {
+          const { scriptTypes } = this.options;
 
-        // gets current script type index in the master list of script types.
-        const currentIndex = scriptTypes.indexOf(currentScriptType);
-        if (!scriptTypes.includes(currentScriptType)) {
-          return false;
-        }
-        if (isNewLine) {
-          switch (currentScriptType) {
-            case SCRIPT_TYPES.HEADER:
-              return SCRIPT_TYPES.ACTION;
-            case SCRIPT_TYPES.CHARACTER:
-              return SCRIPT_TYPES.DIALOGUE;
-            case SCRIPT_TYPES.PARENTHETICAL:
-              return SCRIPT_TYPES.DIALOGUE;
-            default:
-              return currentScriptType;
+          // gets current script type index in the master list of script types.
+          const currentIndex = scriptTypes.indexOf(currentScriptType);
+          if (!scriptTypes.includes(currentScriptType)) {
+            return false;
           }
-        }
-        const nextIndex = (currentIndex + 1) % scriptTypes.length;
-        return scriptTypes[nextIndex];
-      },
+          if (isNewLine) {
+            switch (currentScriptType) {
+              case SCRIPT_TYPES.HEADER:
+                return SCRIPT_TYPES.ACTION;
+              case SCRIPT_TYPES.CHARACTER:
+                return SCRIPT_TYPES.DIALOGUE;
+              case SCRIPT_TYPES.PARENTHETICAL:
+                return SCRIPT_TYPES.DIALOGUE;
+              default:
+                return currentScriptType;
+            }
+          }
+          const nextIndex = isReverse
+            ? Math.abs((currentIndex - 1 + scriptTypes.length) % scriptTypes.length)
+            : (currentIndex + 1) % scriptTypes.length;
+          return scriptTypes[nextIndex];
+        },
       setAttributes:
         (attributes) =>
         ({ commands }) =>
@@ -154,7 +174,7 @@ const ScriptType = Extension.create({
         return { ...styleAttributes(nodeScriptType), ...attributes };
       },
       setParentheses:
-        () =>
+        (isReverse) =>
         ({ tr }) => {
           const { selection } = tr;
           let transaction = tr;
@@ -165,7 +185,11 @@ const ScriptType = Extension.create({
           let newText;
           if (currentScriptType === SCRIPT_TYPES.PARENTHETICAL) {
             newText = `(${text})`;
-          } else if (currentScriptType === SCRIPT_TYPES.HEADER && text.match(re)) {
+          } else if (
+            (currentScriptType === SCRIPT_TYPES.HEADER ||
+              (currentScriptType === SCRIPT_TYPES.DIALOGUE && isReverse)) &&
+            text.match(re)
+          ) {
             newText = text.replaceAll(/^\(*|\)*$/g, '');
           } else {
             return;
@@ -180,13 +204,13 @@ const ScriptType = Extension.create({
           }
         },
       setScriptTypeAuto:
-        (isNewLine) =>
+        (isNewLine, isReverse = false) =>
         ({ commands, tr }) => {
           const { selection } = tr;
           const currentScriptType = selection.$head.parent.attrs.scriptType;
 
           // obtains a new script type based on whether a newline (enter pressed) or same line.
-          const newScriptType = commands.getScriptType(currentScriptType, isNewLine);
+          const newScriptType = commands.getScriptType(currentScriptType, isNewLine, isReverse);
           if (currentScriptType === newScriptType) {
             return;
           }
