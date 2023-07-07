@@ -16,7 +16,7 @@ export const SCRIPT_ATTRIBUTE_TYPES = {
     marginTop: '1em',
   },
   character: {
-    marginInlineStart: '17.5vw',
+    marginInlineStart: '16.5vw',
     marginInlineEnd: '5vw',
     textTransform: 'uppercase',
     marginTop: '1em',
@@ -27,6 +27,6 @@ export const SCRIPT_ATTRIBUTE_TYPES = {
   },
   parenthetical: {
     marginInlineStart: '12.5vw',
-    marginInlineEnd: '19.1vw',
+    marginInlineEnd: '18.1vw',
   },
 };

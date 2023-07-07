@@ -22,3 +22,8 @@
 .App-link {
   color: #61dafb;
 }
+
+.static-footer {
+  height: 10vh;
+  background-color: #f9fafc;
+}

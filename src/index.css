@@ -16,10 +16,10 @@ code {
   color: black;
   font-family: courier_prime, courier_primecyrillic, CourierPrime, Courier, courier, CourierNext,
     monospace;
-  font-size: 20px;
+  font-size: 16px;
   padding-block-end: 1em;
   padding-block-start: 1em;
-  margin-left: 10vw;
+  margin-left: 9vw;
   margin-right: 7vw;
 }
 .ProseMirror:focus-visible {

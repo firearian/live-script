@@ -71,6 +71,7 @@ function App() {
         </div>
         <Routers />
       </header>
+      <div className='static-footer' />
     </div>
   );
 }
